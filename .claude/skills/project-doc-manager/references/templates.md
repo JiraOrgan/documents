@@ -142,11 +142,17 @@ gantt
 
 | 영역 | 기술 | 버전 |
 |------|------|------|
-| Frontend | {프레임워크} | {버전} |
-| Backend | {프레임워크} | {버전} |
-| Database | {DB} | {버전} |
-| Infra | {클라우드/서버} | - |
-| CI/CD | {도구} | - |
+| Frontend | React | 19.x |
+| Mobile | Flutter / Dart | 3.41.x / 3.11.x |
+| Backend | Spring Boot | 4.0.x |
+| Backend (Alt) | Python / FastAPI | 3.14.x / 0.115.x |
+| Database | PostgreSQL | 18.x |
+| Cache | Redis | 8.x |
+| Build | Vite | 8.x |
+| Infra | AWS (ECS, RDS, ElastiCache) | - |
+| CI/CD | GitHub Actions | - |
+| Container | Docker | 29.x |
+| IaC | Terraform | 1.14.x |
 
 ## 5. 주요 일정
 
@@ -329,26 +335,44 @@ flowchart TB
 
 | 항목 | 기술 | 선정 사유 |
 |------|------|-----------|
-| Framework | {React/Vue/등} | {사유} |
+| Framework | React 19.x | {사유} |
 | 상태 관리 | {Redux/Zustand/등} | {사유} |
 | 스타일링 | {Tailwind/등} | {사유} |
-| 빌드 도구 | {Vite/Webpack/등} | {사유} |
+| 빌드 도구 | Vite 8.x | {사유} |
 
-### 3.2 Backend
+### 3.2 Mobile
 
 | 항목 | 기술 | 선정 사유 |
 |------|------|-----------|
-| Framework | {Spring/NestJS/등} | {사유} |
+| Framework | Flutter 3.41 | 크로스플랫폼 |
+| 언어 | Dart 3.11 | Null Safety |
+| 상태 관리 | Riverpod | 선언적 상태 관리 |
+
+### 3.3 Backend (Java)
+
+| 항목 | 기술 | 선정 사유 |
+|------|------|-----------|
+| Framework | Spring Boot 4.0.x | {사유} |
 | ORM | {JPA/Prisma/등} | {사유} |
 | 인증 | {JWT/OAuth2/등} | {사유} |
 
-### 3.3 Infrastructure
+### 3.4 Backend (Python) — 선택
+
+| 항목 | 기술 | 선정 사유 |
+|------|------|-----------|
+| Language | Python 3.14.x | 범용성, 풍부한 생태계 |
+| Framework | FastAPI 0.115.x | 비동기, 자동 문서화(Swagger) |
+| ORM | SQLAlchemy 2.x | 유연한 쿼리 빌더 |
+| Task Queue | Celery 5.x | 비동기 작업 처리 |
+
+### 3.5 Infrastructure
 
 | 항목 | 기술 | 선정 사유 |
 |------|------|-----------|
 | 클라우드 | {AWS/GCP/등} | {사유} |
-| 컨테이너 | {Docker/K8s/등} | {사유} |
+| 컨테이너 | Docker 29.x | {사유} |
 | CI/CD | {GitHub Actions/등} | {사유} |
+| IaC | Terraform 1.14.x | {사유} |
 | 모니터링 | {Grafana/등} | {사유} |
 
 ## 4. 디렉토리 구조
@@ -357,6 +381,8 @@ flowchart TB
 project-root/
 ├── frontend/
 │   └── src/
+├── mobile/
+│   └── lib/
 ├── backend/
 │   └── src/
 ├── docs/
@@ -1029,8 +1055,10 @@ flowchart BT
 | 유형 | 범위 | 도구 | 커버리지 목표 |
 |------|------|------|--------------|
 | 단위 테스트 | 함수/메서드 | {Jest/JUnit/등} | 80% 이상 |
+| 모바일 단위 테스트 | Flutter 위젯/함수 | Flutter Test | 80% 이상 |
 | 통합 테스트 | API 엔드포인트 | {Supertest/등} | 주요 API 100% |
 | E2E 테스트 | 사용자 시나리오 | {Cypress/Playwright/등} | 핵심 시나리오 100% |
+| 모바일 E2E 테스트 | 모바일 사용자 시나리오 | Flutter Integration Test | 핵심 시나리오 100% |
 | 성능 테스트 | 부하/스트레스 | {k6/JMeter/등} | SLA 충족 |
 
 ## 3. 테스트 케이스
@@ -1224,8 +1252,9 @@ flowchart LR
 
 | 도구 | 버전 | 용도 |
 |------|------|------|
-| Docker | 24.x+ | 컨테이너 빌드 |
-| kubectl | 1.28+ | K8s 클러스터 관리 |
+| Docker | 29.x | 컨테이너 빌드 |
+| kubectl | 1.32+ | K8s 클러스터 관리 |
+| Terraform | 1.14.x | 인프라 프로비저닝 |
 | {도구} | {버전} | {용도} |
 
 ### 3.2 환경 변수

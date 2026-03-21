@@ -1,0 +1,7 @@
+{
+  "tool_name": "Read",
+  "tool_input_preview": "{\"file_path\":\"D:\\\\workspace\\\\jira-doc\\\\Jira_기능정의서_v3.md\"}",
+  "error": "File content (11053 tokens) exceeds maximum allowed tokens (10000). Use offset and limit parameters to read specific portions of the file, or search for specific content instead of reading the whole file.",
+  "timestamp": "2026-03-21T12:56:30.266Z",
+  "retry_count": 1
+}

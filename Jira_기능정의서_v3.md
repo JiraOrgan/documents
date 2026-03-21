@@ -99,6 +99,18 @@ project = "OLD_PROJECT" AND archived = true AND status = Done
 | **CI/CD 도구** | Jenkins, GitHub Actions 빌드 상태 연동 |
 | **REST API** | 외부 시스템과 이슈 CRUD 자동화 (섹션 15 참조) |
 
+### 📱 모바일 앱 기술 스택
+
+iOS / Android 크로스플랫폼 모바일 앱을 Flutter 단일 코드베이스로 제공합니다.
+
+| 항목 | 기술 | 버전 | 비고 |
+|------|------|------|------|
+| Framework | Flutter | 3.41.x | 크로스플랫폼, 단일 코드베이스 iOS/Android |
+| 언어 | Dart | 3.11.x | Null Safety, 패턴 매칭 지원 |
+| 상태 관리 | Riverpod | 최신 | 선언적 상태 관리 |
+| HTTP 클라이언트 | Dio | 최신 | REST API 통신, Interceptor 지원 |
+| 주요 기능 | 이슈 조회/생성, 보드 확인, 알림 수신 | - | REST API 연동 |
+
 ---
 
 ## 3. WIP 제한 설정
@@ -684,3 +696,4 @@ graph TD
 | v1.0 | 2026-03-08 | 초기 기능 정의 작성 |
 | v2.0 | 2026-03-08 | WIP 제한, Story Point/Planning Poker, 아카이브 정책, Audit Log 강화, Mermaid 관계도 추가 |
 | v3.0 | 2026-03-08 | 운영 정책(7), 표준 Workflow(8), Issue 계층 정의(9), DoR/DoD(10), Sprint 운영 프로세스(11), Release 관리(12), 표준 Dashboard(13), 권한 매트릭스(14), REST API 확장(15), 전체 관계도 재설계(16) |
+| v3.1 | 2026-03-21 | 모바일 앱 기술 스택 섹션 추가 (Flutter 3.41 / Dart 3.11 / Riverpod / Dio) |
