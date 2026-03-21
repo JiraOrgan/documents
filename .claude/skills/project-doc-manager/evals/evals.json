@@ -1,0 +1,23 @@
+{
+  "skill_name": "project-doc-manager",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "우리 프로젝트 이름은 '온라인 쇼핑몰'이야. 프로젝트 문서 폴더랑 템플릿 전부 초기화해줘. 작성자는 김개발이야.",
+      "expected_output": "docs/ 하위에 13개 폴더 생성, 각 폴더에 v1.0 템플릿 파일, README.md 인덱스 파일 생성",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "ERD 문서만 하나 만들어줘. 프로젝트명은 CRM 시스템이야. 작성자는 박설계.",
+      "expected_output": "docs/02-ERD/ 폴더에 02-ERD_v1.0.md 파일 생성, ERD 전용 상세 템플릿(Mermaid erDiagram 포함) 적용",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "API 정의서 버전 올려줘. 인증 관련 엔드포인트를 추가했거든. 기존에 docs/04-API정의서/04-API정의서_v1.0.md 가 있어.",
+      "expected_output": "docs/04-API정의서/04-API정의서_v2.0.md 파일 생성, 메타데이터 버전 v2.0으로 갱신, 변경 이력에 새 항목 추가",
+      "files": []
+    }
+  ]
+}

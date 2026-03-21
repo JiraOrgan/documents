@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cp \"D:/workspace/jira-doc/project-doc-manager/SKILL.md\" \"$HOME/.claude/skills/omc-learned/project-doc-manager/SKILL.md\")",
+      "Bash(cp \"D:/workspace/jira-doc/project-doc-manager/references/templates.md\" \"$HOME/.claude/skills/omc-learned/project-doc-manager/references/templates.md\")",
+      "Bash(cp \"D:/workspace/jira-doc/project-doc-manager/scripts/init_docs.sh\" \"$HOME/.claude/skills/omc-learned/project-doc-manager/scripts/init_docs.sh\")",
+      "Bash(cd:*)"
+    ]
+  }
+}
