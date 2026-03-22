@@ -1,0 +1,2064 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jira 프로젝트 관리 시스템 스토리보드</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0d1117;--surface:#161b22;--surface2:#21262d;--surface3:#30363d;
+  --border:#30363d;--border2:#444c56;
+  --text:#e6edf3;--text2:#8b949e;--text3:#6e7681;
+  --accent:#58a6ff;--accent2:#1f6feb;
+  --green:#3fb950;--orange:#f59e0b;--purple:#8b5cf6;--pink:#ec4899;--blue:#58a6ff;
+  --red:#f85149;--yellow:#e3b341;
+  --font:'Noto Sans KR',sans-serif;--mono:'Fira Code',monospace;
+  --slide-w:960px;--slide-h:540px;
+  --header-h:44px;--badges-h:32px;
+}
+body{background:#000;font-family:var(--font);color:var(--text);overflow:hidden;width:100vw;height:100vh}
+[data-role="ROLE_DEV"]{--role-color:#3FB950;--role-bg:#0d2818;--role-text:#a7f3d0}
+[data-role="ROLE_PO"]{--role-color:#F59E0B;--role-bg:#451a03;--role-text:#fde68a}
+[data-role="ROLE_SM"]{--role-color:#8B5CF6;--role-bg:#2e1065;--role-text:#ddd6fe}
+[data-role="ROLE_QA"]{--role-color:#EC4899;--role-bg:#500724;--role-text:#fbcfe8}
+[data-role="ROLE_ADMIN"]{--role-color:#58a6ff;--role-bg:#0c2d6b;--role-text:#bfdbfe}
+.presentation{width:100vw;height:100vh;display:flex;align-items:center;justify-content:center;background:#000;position:relative}
+.slides{width:var(--slide-w);height:var(--slide-h);position:relative;transform-origin:center center}
+.slide{position:absolute;inset:0;width:var(--slide-w);height:var(--slide-h);background:var(--bg);overflow:hidden;opacity:0;pointer-events:none;transition:opacity .3s ease;display:flex;flex-direction:column}
+.slide.active{opacity:1;pointer-events:all}
+.slide.hidden{display:none}
+.title-slide{background:linear-gradient(135deg,#0d1117 0%,#161b22 50%,#1f2937 100%);align-items:center;justify-content:center;text-align:center;gap:0}
+.title-slide .title-logo{font-size:11px;color:var(--text3);letter-spacing:3px;text-transform:uppercase;margin-bottom:16px}
+.title-slide h1{font-size:28px;font-weight:900;color:var(--text);line-height:1.2;margin-bottom:8px}
+.title-slide .subtitle{font-size:13px;color:var(--text2);margin-bottom:24px}
+.title-slide .tag-row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:20px}
+.tech-tag{background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:4px 10px;font-size:10px;color:var(--text2);font-family:var(--mono)}
+.title-slide .meta{font-size:10px;color:var(--text3)}
+.info-slide{background:var(--surface);padding:28px 36px}
+.info-slide h2{font-size:18px;font-weight:700;color:var(--text);margin-bottom:16px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+.info-table{width:100%;border-collapse:collapse;font-size:11px}
+.info-table th{background:var(--surface2);color:var(--text2);padding:7px 10px;text-align:left;border:1px solid var(--border);font-weight:600}
+.info-table td{padding:6px 10px;border:1px solid var(--border);color:var(--text);vertical-align:middle}
+.info-table tr:nth-child(even) td{background:var(--surface2)}
+.role-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;vertical-align:middle}
+.sb-slide{display:flex;flex-direction:column}
+.slide-header{height:var(--header-h);min-height:var(--header-h);background:var(--surface2);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 14px;gap:10px;font-size:11px}
+.slide-header .project-name{color:var(--text3);font-weight:400}
+.slide-header .screen-id{color:var(--text);font-weight:700;font-size:12px}
+.slide-header .role-badge{margin-left:auto;padding:3px 8px;border-radius:10px;font-size:10px;font-weight:600;background:var(--role-bg,#21262d);color:var(--role-text,#8b949e);border:1px solid var(--role-color,#444)}
+.slide-badges{height:var(--badges-h);min-height:var(--badges-h);background:var(--bg);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 14px;gap:8px;font-size:10px}
+.method-label{padding:2px 8px;border-radius:3px;font-family:var(--mono);font-size:9px;font-weight:500}
+.method-get{background:#0a3622;color:#3fb950;border:1px solid #1a7f37}
+.method-post{background:#0c2d6b;color:#58a6ff;border:1px solid #1d4ed8}
+.method-put{background:#451a03;color:#f59e0b;border:1px solid #92400e}
+.method-delete{background:#2d0a0a;color:#f85149;border:1px solid #7f1d1d}
+.method-error{background:#2d0a0a;color:#f85149;border:1px solid #7f1d1d}
+.url-badge{font-family:var(--mono);color:var(--text2);font-size:10px}
+.sep{color:var(--border2);margin:0 2px}
+.auth-badge{padding:2px 6px;border-radius:3px;background:var(--surface2);color:var(--text2);border:1px solid var(--border);font-size:9px}
+.slide-main{flex:1;display:flex;overflow:hidden}
+.slide-mockup{width:60%;border-right:1px solid var(--border);overflow:hidden;display:flex;flex-direction:column;background:var(--bg)}
+.slide-panel{width:40%;overflow-y:auto;background:var(--surface);display:flex;flex-direction:column}
+.slide-panel::-webkit-scrollbar{width:4px}
+.slide-panel::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+.mock-browser{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.mock-browser-bar{background:var(--surface2);border-bottom:1px solid var(--border);padding:5px 10px;display:flex;align-items:center;gap:6px;flex-shrink:0}
+.mock-dot{width:8px;height:8px;border-radius:50%}
+.mock-dot.red{background:#f85149}.mock-dot.yellow{background:#e3b341}.mock-dot.green{background:#3fb950}
+.mock-url-bar{flex:1;background:var(--surface3);border:1px solid var(--border);border-radius:4px;padding:3px 8px;font-size:9px;color:var(--text3);font-family:var(--mono)}
+.mock-browser-body{flex:1;overflow:hidden;padding:8px;font-size:9px;color:var(--text);display:flex;flex-direction:column;gap:6px}
+.mock-navbar{background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:5px 10px;display:flex;align-items:center;gap:8px;flex-shrink:0}
+.mock-navbar-brand{font-size:10px;font-weight:700;color:var(--accent);font-family:var(--mono)}
+.mock-navbar-links{display:flex;gap:10px;margin-left:auto}
+.mock-navbar-link{font-size:9px;color:var(--text2);cursor:pointer}
+.mock-navbar-link.active{color:var(--text)}
+.mock-navbar-user{font-size:9px;color:var(--text2);background:var(--surface3);padding:2px 6px;border-radius:3px}
+.mock-card{background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:8px 10px}
+.mock-card-title{font-size:10px;font-weight:600;color:var(--text);margin-bottom:4px}
+.mock-card-val{font-size:18px;font-weight:700;color:var(--accent)}
+.mock-card-sub{font-size:8px;color:var(--text3)}
+.mock-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.mock-grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
+.mock-grid-4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px}
+.mock-search-bar{background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:5px 10px;display:flex;align-items:center;gap:6px;font-size:9px;color:var(--text3)}
+.mock-table{width:100%;border-collapse:collapse;font-size:9px}
+.mock-table th{background:var(--surface3);color:var(--text2);padding:4px 6px;text-align:left;border:1px solid var(--border)}
+.mock-table td{padding:4px 6px;border:1px solid var(--border);color:var(--text);vertical-align:middle}
+.mock-table tr:nth-child(even) td{background:var(--surface2)}
+.mock-status{display:inline-block;padding:1px 6px;border-radius:8px;font-size:8px;font-weight:600}
+.mock-status-todo{background:#1c2128;color:#8b949e;border:1px solid #444}
+.mock-status-progress{background:#0c2d6b;color:#58a6ff;border:1px solid #1d4ed8}
+.mock-status-review{background:#2e1065;color:#8b5cf6;border:1px solid #7c3aed}
+.mock-status-qa{background:#500724;color:#ec4899;border:1px solid #9d174d}
+.mock-status-done{background:#0d2818;color:#3fb950;border:1px solid #166534}
+.mock-form{display:flex;flex-direction:column;gap:5px}
+.mock-form-row{display:flex;flex-direction:column;gap:2px}
+.mock-form-label{font-size:8px;color:var(--text2)}
+.mock-form-input{background:var(--surface3);border:1px solid var(--border);border-radius:3px;padding:4px 7px;font-size:9px;color:var(--text)}
+.mock-form-select{background:var(--surface3);border:1px solid var(--border);border-radius:3px;padding:4px 7px;font-size:9px;color:var(--text)}
+.mock-form-textarea{background:var(--surface3);border:1px solid var(--border);border-radius:3px;padding:4px 7px;font-size:9px;color:var(--text);resize:none;height:36px}
+.mock-form-row-2{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+.mock-btn{padding:4px 10px;border-radius:4px;border:none;font-size:9px;font-weight:600;cursor:pointer;font-family:var(--font)}
+.mock-btn-primary{background:var(--accent2);color:#fff}
+.mock-btn-secondary{background:var(--surface3);color:var(--text2);border:1px solid var(--border)}
+.mock-btn-danger{background:#7f1d1d;color:#f85149}
+.mock-btn-success{background:#166534;color:#3fb950}
+.mock-btn-row{display:flex;gap:6px;margin-top:4px}
+.mock-annotation{position:relative;border:1px dashed var(--border2);border-radius:4px;padding:5px;background:rgba(88,166,255,.04)}
+.mock-annotation::before{content:attr(data-label);position:absolute;top:-8px;left:8px;background:var(--surface);padding:0 4px;font-size:8px;color:var(--accent);font-family:var(--mono)}
+.mock-board{display:flex;gap:5px;flex:1;overflow-x:auto}
+.mock-board::-webkit-scrollbar{height:3px}
+.mock-board::-webkit-scrollbar-thumb{background:var(--border2)}
+.mock-column{min-width:100px;flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:4px;display:flex;flex-direction:column;overflow:hidden}
+.mock-col-header{padding:4px 6px;background:var(--surface3);border-bottom:1px solid var(--border);font-size:8px;font-weight:600;color:var(--text2);display:flex;align-items:center;justify-content:space-between}
+.mock-col-wip{font-size:7px;color:var(--text3)}
+.mock-col-wip.over{color:var(--red)}
+.mock-col-body{flex:1;padding:4px;display:flex;flex-direction:column;gap:3px;overflow-y:auto}
+.mock-issue-card{background:var(--bg);border:1px solid var(--border);border-radius:3px;padding:4px 5px;font-size:8px;cursor:grab}
+.mock-issue-key{color:var(--accent);font-family:var(--mono);font-size:7px}
+.mock-issue-title{color:var(--text);margin-top:1px;line-height:1.3}
+.mock-issue-meta{display:flex;gap:4px;margin-top:2px;align-items:center}
+.mock-avatar{width:12px;height:12px;border-radius:50%;background:var(--accent2);font-size:6px;display:flex;align-items:center;justify-content:center;color:#fff}
+.mock-sp-badge{background:var(--surface3);color:var(--text3);border-radius:2px;padding:0 3px;font-size:7px}
+.panel-section{border-bottom:1px solid var(--border)}
+.panel-section summary{padding:7px 12px;cursor:pointer;font-size:10px;font-weight:600;color:var(--text2);display:flex;align-items:center;gap:6px;list-style:none;user-select:none}
+.panel-section summary::-webkit-details-marker{display:none}
+.panel-section summary::before{content:"\25B6";font-size:8px;color:var(--text3);transition:transform .2s}
+.panel-section[open] summary::before{transform:rotate(90deg)}
+.panel-section summary .ps-icon{font-size:12px}
+.panel-content{padding:8px 12px;display:flex;flex-direction:column;gap:5px}
+.action-table,.error-table,.valid-table{width:100%;border-collapse:collapse;font-size:9px}
+.action-table th,.error-table th,.valid-table th{background:var(--surface3);color:var(--text2);padding:4px 6px;text-align:left;border:1px solid var(--border);font-size:8px}
+.action-table td,.error-table td,.valid-table td{padding:4px 6px;border:1px solid var(--border);color:var(--text);vertical-align:top;font-size:9px}
+.action-table tr:nth-child(even) td,.error-table tr:nth-child(even) td,.valid-table tr:nth-child(even) td{background:var(--surface2)}
+.vm-tree{font-family:var(--mono);font-size:9px;color:var(--text2);line-height:1.6;padding:2px 0}
+.vm-tree .vm-key{color:var(--green)}
+.vm-tree .vm-type{color:var(--purple)}
+.vm-tree .vm-arr{color:var(--orange)}
+.error-code{font-family:var(--mono);font-size:8px;color:var(--red);font-weight:600}
+.http-get{color:var(--green)}.http-post{color:var(--blue)}.http-put{color:var(--orange)}.http-delete{color:var(--red)}
+.perm-row{display:flex;align-items:center;gap:6px;padding:3px 0;font-size:9px}
+.perm-icon{font-size:11px}
+.role-filter{position:fixed;top:12px;left:50%;transform:translateX(-50%);display:flex;gap:6px;z-index:100;background:rgba(13,17,23,.9);border:1px solid var(--border);border-radius:20px;padding:5px 10px;backdrop-filter:blur(8px)}
+.role-filter-btn{padding:3px 10px;border-radius:12px;border:1px solid var(--border);background:transparent;color:var(--text2);font-size:10px;font-weight:600;cursor:pointer;font-family:var(--font);transition:all .2s}
+.role-filter-btn.active{background:var(--surface2);color:var(--text)}
+.role-filter-btn:hover{background:var(--surface3)}
+.progress-bar{position:fixed;bottom:0;left:0;width:100%;height:2px;background:var(--surface2);z-index:100}
+.progress-fill{height:100%;background:var(--accent);transition:width .3s ease}
+.slide-counter{position:fixed;bottom:8px;right:14px;font-size:10px;color:var(--text3);z-index:100;font-family:var(--mono)}
+.nav-arrow{position:fixed;top:50%;transform:translateY(-50%);background:rgba(13,17,23,.8);border:1px solid var(--border);border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text2);font-size:14px;z-index:100;transition:all .2s;backdrop-filter:blur(4px)}
+.nav-arrow:hover{background:var(--surface2);color:var(--text)}
+.nav-prev{left:10px}.nav-next{right:10px}
+.toc-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;opacity:0;pointer-events:none;transition:opacity .3s}
+.toc-overlay.open{opacity:1;pointer-events:all}
+.toc-sidebar{position:absolute;right:0;top:0;bottom:0;width:260px;background:var(--surface);border-left:1px solid var(--border);overflow-y:auto;padding:16px;transform:translateX(100%);transition:transform .3s}
+.toc-overlay.open .toc-sidebar{transform:translateX(0)}
+.toc-sidebar h3{font-size:13px;color:var(--text);margin-bottom:12px}
+.toc-item{padding:6px 10px;border-radius:4px;cursor:pointer;font-size:10px;color:var(--text2);display:flex;align-items:center;gap:6px;margin-bottom:2px}
+.toc-item:hover{background:var(--surface2);color:var(--text)}
+.toc-item.active{background:var(--surface3);color:var(--accent)}
+.toc-item .toc-id{font-family:var(--mono);font-size:9px;color:var(--text3);min-width:24px}
+.help-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:300;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s}
+.help-overlay.open{opacity:1;pointer-events:all}
+.help-box{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:24px;min-width:280px}
+.help-box h3{font-size:14px;color:var(--text);margin-bottom:12px}
+.help-row{display:flex;justify-content:space-between;padding:4px 0;font-size:10px;border-bottom:1px solid var(--border)}
+.help-key{font-family:var(--mono);color:var(--accent);background:var(--surface2);padding:2px 6px;border-radius:3px}
+.toc-btn,.help-btn{position:fixed;z-index:100;background:rgba(13,17,23,.8);border:1px solid var(--border);border-radius:6px;padding:5px 9px;cursor:pointer;color:var(--text2);font-size:11px;backdrop-filter:blur(4px);transition:all .2s}
+.toc-btn:hover,.help-btn:hover{background:var(--surface2);color:var(--text)}
+.toc-btn{bottom:28px;left:14px}.help-btn{bottom:28px;left:70px}
+.drag-handle{color:var(--text3);cursor:grab;margin-right:4px;font-size:10px}
+.priority-badge{display:inline-block;padding:1px 5px;border-radius:3px;font-size:7px;font-weight:600}
+.priority-high{background:#7f1d1d;color:#f85149}.priority-medium{background:#451a03;color:#f59e0b}.priority-low{background:#0d2818;color:#3fb950}
+.pr-file{font-family:var(--mono);font-size:8px;color:var(--text2);padding:2px 4px;border-radius:2px;background:var(--surface3)}
+.comment-box{background:var(--surface3);border:1px solid var(--border);border-radius:3px;padding:5px;font-size:8px}
+.comment-author{color:var(--accent);font-weight:600;font-size:8px}
+.report-tab{padding:3px 8px;font-size:9px;cursor:pointer;border-radius:3px 3px 0 0;border:1px solid var(--border);background:var(--surface2);color:var(--text2)}
+.report-tab.active{background:var(--surface3);color:var(--text);border-bottom-color:var(--surface3)}
+.poker-cards{display:flex;gap:5px;flex-wrap:wrap;padding:6px 0}
+.poker-card{width:28px;height:38px;background:var(--surface2);border:1px solid var(--border);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--text);cursor:pointer;transition:all .2s;font-family:var(--mono)}
+.poker-card:hover,.poker-card.selected{background:var(--accent2);border-color:var(--accent);color:#fff}
+.sprint-box{background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:6px 8px;margin-bottom:4px}
+.sprint-label{font-size:9px;font-weight:600;color:var(--accent);margin-bottom:4px}
+.issue-row{display:flex;align-items:center;gap:5px;padding:3px 4px;border-radius:3px;background:var(--bg);border:1px solid var(--border);margin-bottom:2px;font-size:8px}
+.settings-tab-row{display:flex;gap:2px;margin-bottom:8px}
+.settings-tab{padding:3px 8px;font-size:8px;cursor:pointer;border-radius:3px 3px 0 0;border:1px solid var(--border);background:var(--surface2);color:var(--text2)}
+.settings-tab.active{background:var(--surface3);color:var(--text)}
+.audit-row{display:flex;gap:6px;align-items:center;padding:3px 6px;border-bottom:1px solid var(--border);font-size:8px}
+.release-bar{height:6px;background:var(--surface3);border-radius:3px;overflow:hidden;margin-top:3px}
+.release-fill{height:100%;background:var(--green);border-radius:3px}
+.jql-result-key{font-family:var(--mono);color:var(--accent);font-size:8px}
+.autocomplete-drop{background:var(--surface2);border:1px solid var(--border);border-radius:0 0 4px 4px;font-size:8px}
+.autocomplete-item{padding:3px 8px;color:var(--text2);cursor:pointer}
+.autocomplete-item:hover{background:var(--surface3);color:var(--text)}
+.error-card-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.error-card{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:10px;display:flex;flex-direction:column;gap:4px}
+.error-card-code{font-size:18px;font-weight:900;font-family:var(--mono);color:var(--red)}
+.error-card-title{font-size:10px;font-weight:600;color:var(--text)}
+.error-card-desc{font-size:8px;color:var(--text2)}
+.error-card-actions{display:flex;gap:4px;margin-top:4px;flex-wrap:wrap}
+</style>
+</head>
+<body>
+<div class="presentation">
+<div class="slides" id="slides">
+
+<!-- ===== SLIDE 00: TITLE ===== -->
+<div class="slide title-slide active" data-role="ALL" data-id="00" data-set="intro">
+  <div class="title-logo">Jira Project Management System</div>
+  <h1>Jira 프로젝트 관리 시스템<br>스토리보드</h1>
+  <div class="subtitle">v3.0 &mdash; 화면 설계 명세서</div>
+  <div class="tag-row">
+    <span class="tech-tag">Spring Boot 4.0</span>
+    <span class="tech-tag">React 19</span>
+    <span class="tech-tag">Flutter 3.41</span>
+    <span class="tech-tag">PostgreSQL 18</span>
+  </div>
+  <div class="meta">작성일: 2026-03-22 &nbsp;|&nbsp; 총 18개 화면</div>
+</div>
+
+<!-- ===== SLIDE 01: ROLE DEFINITIONS ===== -->
+<div class="slide info-slide" data-role="ALL" data-id="01" data-set="intro">
+  <h2>역할 정의 (Role Definitions)</h2>
+  <table class="info-table">
+    <thead><tr><th>역할명</th><th>Role 상수</th><th>색상</th><th>주요 책임</th></tr></thead>
+    <tbody>
+      <tr><td><span class="role-dot" style="background:#3FB950"></span><strong>Developer</strong></td><td style="font-family:var(--mono);color:#3FB950">ROLE_DEV</td><td><span class="role-dot" style="background:#3FB950"></span>#3FB950</td><td>이슈 처리, 코드 작성, PR 생성, 스크럼 보드 관리</td></tr>
+      <tr><td><span class="role-dot" style="background:#F59E0B"></span><strong>Product Owner</strong></td><td style="font-family:var(--mono);color:#F59E0B">ROLE_PO</td><td><span class="role-dot" style="background:#F59E0B"></span>#F59E0B</td><td>백로그 관리, 이슈 생성, 우선순위 설정, 릴리즈 관리</td></tr>
+      <tr><td><span class="role-dot" style="background:#8B5CF6"></span><strong>Scrum Master</strong></td><td style="font-family:var(--mono);color:#8B5CF6">ROLE_SM</td><td><span class="role-dot" style="background:#8B5CF6"></span>#8B5CF6</td><td>스프린트 관리, Planning Poker 진행, 팀 퍼실리테이션</td></tr>
+      <tr><td><span class="role-dot" style="background:#EC4899"></span><strong>QA Engineer</strong></td><td style="font-family:var(--mono);color:#EC4899">ROLE_QA</td><td><span class="role-dot" style="background:#EC4899"></span>#EC4899</td><td>테스트 실행, 버그 검증, 품질 보증, 코드 리뷰 승인</td></tr>
+      <tr><td><span class="role-dot" style="background:#58a6ff"></span><strong>Admin</strong></td><td style="font-family:var(--mono);color:#58a6ff">ROLE_ADMIN</td><td><span class="role-dot" style="background:#58a6ff"></span>#58a6ff</td><td>프로젝트 설정, Audit Log, 권한 관리, 시스템 구성</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ===== SLIDE 02: SCENARIO OVERVIEW ===== -->
+<div class="slide info-slide" data-role="ALL" data-id="02" data-set="intro">
+  <h2>시나리오 개요 (User Stories)</h2>
+  <table class="info-table">
+    <thead><tr><th>ID</th><th>시나리오</th><th>역할</th><th>주요 화면</th><th>API</th></tr></thead>
+    <tbody>
+      <tr><td style="font-family:var(--mono);color:var(--accent)">US-001</td><td>로그인 및 대시보드</td><td style="color:#3FB950">ALL / DEV</td><td>로그인, 대시보드</td><td style="font-family:var(--mono);font-size:9px">POST /auth/login</td></tr>
+      <tr><td style="font-family:var(--mono);color:var(--accent)">US-002</td><td>백로그 관리 및 이슈 생성</td><td style="color:#F59E0B">PO</td><td>백로그, 이슈 생성 모달</td><td style="font-family:var(--mono);font-size:9px">POST /api/2/issue</td></tr>
+      <tr><td style="font-family:var(--mono);color:var(--accent)">US-003</td><td>스프린트 생성 및 Planning Poker</td><td style="color:#8B5CF6">SM</td><td>스프린트 다이얼로그, Poker</td><td style="font-family:var(--mono);font-size:9px">POST /agile/1.0/sprint</td></tr>
+      <tr><td style="font-family:var(--mono);color:var(--accent)">US-004</td><td>스크럼 보드 및 이슈 상세</td><td style="color:#3FB950">DEV</td><td>칸반 보드, 이슈 상세</td><td style="font-family:var(--mono);font-size:9px">PUT /issue/{id}/transitions</td></tr>
+      <tr><td style="font-family:var(--mono);color:var(--accent)">US-005</td><td>코드 리뷰 및 QA</td><td style="color:#EC4899">QA</td><td>PR 연동, 리뷰</td><td style="font-family:var(--mono);font-size:9px">PUT /issue/{key}/transitions</td></tr>
+      <tr><td style="font-family:var(--mono);color:var(--accent)">US-006</td><td>릴리즈 관리</td><td style="color:#F59E0B">PO</td><td>릴리즈 허브</td><td style="font-family:var(--mono);font-size:9px">POST /project/{id}/versions</td></tr>
+      <tr><td style="font-family:var(--mono);color:var(--accent)">US-007</td><td>JQL 검색</td><td>ALL</td><td>JQL 검색창, 결과</td><td style="font-family:var(--mono);font-size:9px">POST /api/2/search</td></tr>
+      <tr><td style="font-family:var(--mono);color:var(--accent)">US-008</td><td>프로젝트 설정</td><td style="color:#58a6ff">ADMIN</td><td>설정 탭</td><td style="font-family:var(--mono);font-size:9px">PUT /api/2/project/{id}</td></tr>
+      <tr><td style="font-family:var(--mono);color:var(--accent)">US-009</td><td>Audit Log</td><td style="color:#58a6ff">ADMIN</td><td>감사 로그 테이블</td><td style="font-family:var(--mono);font-size:9px">GET /api/2/audit-log</td></tr>
+      <tr><td style="font-family:var(--mono);color:var(--accent)">US-010</td><td>리포트</td><td style="color:#F59E0B">PO</td><td>번다운/속도 차트</td><td style="font-family:var(--mono);font-size:9px">GET /api/2/report/{type}</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ===== SLIDE 03: US-001 LOGIN ===== -->
+<div class="slide sb-slide" data-role="ALL" data-id="03" data-set="us001-login">
+  <div class="slide-header" data-role="ALL">
+    <span class="project-name">Jira PM |</span>
+    <span class="screen-id">로그인</span>
+    <span class="role-badge">ALL</span>
+  </div>
+  <div class="slide-badges">
+    <span class="method-label method-get">GET</span>
+    <span class="url-badge">/auth/login</span>
+    <span class="sep">|</span>
+    <span class="url-badge">login.html</span>
+    <span class="sep">|</span>
+    <span class="auth-badge">PUBLIC</span>
+  </div>
+  <div class="slide-main">
+    <div class="slide-mockup">
+      <div class="mock-browser">
+        <div class="mock-browser-bar">
+          <span class="mock-dot red"></span><span class="mock-dot yellow"></span><span class="mock-dot green"></span>
+          <div class="mock-url-bar">https://jira-pm.example.com/auth/login</div>
+        </div>
+        <div class="mock-browser-body" style="align-items:center;justify-content:center">
+          <div class="mock-annotation" data-label="LoginForm" style="width:260px">
+            <div style="font-size:14px;font-weight:700;color:var(--accent);text-align:center;margin-bottom:12px">Jira PM</div>
+            <div class="mock-form">
+              <div class="mock-form-row"><div class="mock-form-label">이메일 *</div><div class="mock-form-input">user@example.com</div></div>
+              <div class="mock-form-row"><div class="mock-form-label">비밀번호 *</div><div class="mock-form-input" style="letter-spacing:3px">&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;</div></div>
+              <div style="display:flex;align-items:center;gap:6px;font-size:8px;color:var(--text2);margin-top:2px"><input type="checkbox" style="width:10px;height:10px"> 로그인 상태 유지</div>
+              <div class="mock-btn-row" style="margin-top:8px"><div class="mock-btn mock-btn-primary" style="flex:1;text-align:center">로그인</div></div>
+              <div style="text-align:center;font-size:8px;color:var(--text3);margin-top:6px">비밀번호 찾기 | 계정 잠금 해제 문의</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-panel" data-role="ALL">
+      <details class="panel-section" name="panel-s3" open>
+        <summary><span class="ps-icon">&#x26A1;</span>액션</summary>
+        <div class="panel-content">
+          <table class="action-table"><thead><tr><th>액션</th><th>메서드</th><th>엔드포인트</th></tr></thead><tbody><tr><td>로그인</td><td class="http-post">POST</td><td style="font-family:var(--mono);font-size:8px">/auth/login</td></tr></tbody></table>
+        </div>
+      </details>
+      <details class="panel-section" name="panel-s3">
+        <summary><span class="ps-icon">&#x26A0;&#xFE0F;</span>오류</summary>
+        <div class="panel-content">
+          <table class="error-table"><thead><tr><th>코드</th><th>설명</th></tr></thead><tbody><tr><td class="error-code">401</td><td>인증 실패 (이메일/비밀번호 불일치)</td></tr><tr><td class="error-code">423</td><td>계정 잠금 (5회 이상 실패)</td></tr></tbody></table>
+        </div>
+      </details>
+      <details class="panel-section" name="panel-s3">
+        <summary><span class="ps-icon">&#x1F4E6;</span>ViewModel</summary>
+        <div class="panel-content">
+          <div class="vm-tree"><div><span class="vm-key">email</span>: <span class="vm-type">String</span></div><div><span class="vm-key">password</span>: <span class="vm-type">String</span></div><div><span class="vm-key">rememberMe</span>: <span class="vm-type">Boolean</span></div></div>
+        </div>
+      </details>
+      <details class="panel-section" name="panel-s3">
+        <summary><span class="ps-icon">&#x2705;</span>유효성</summary>
+        <div class="panel-content">
+          <table class="valid-table"><thead><tr><th>필드</th><th>규칙</th></tr></thead><tbody><tr><td>email</td><td>이메일 포맷 필수</td></tr><tr><td>password</td><td>필수, 최소 8자</td></tr></tbody></table>
+        </div>
+      </details>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SLIDE 04: US-001 DASHBOARD ===== -->
+<div class="slide sb-slide" data-role="ROLE_DEV" data-id="04" data-set="us001-login">
+  <div class="slide-header" data-role="ROLE_DEV">
+    <span class="project-name">Jira PM |</span>
+    <span class="screen-id">ROLE_DEV 대시보드</span>
+    <span class="role-badge">ROLE_DEV</span>
+  </div>
+  <div class="slide-badges">
+    <span class="method-label method-get">GET</span>
+    <span class="url-badge">/dashboard</span>
+    <span class="sep">|</span>
+    <span class="auth-badge">&#x1F510; ROLE_DEV</span>
+  </div>
+  <div class="slide-main">
+    <div class="slide-mockup">
+      <div class="mock-browser">
+        <div class="mock-browser-bar">
+          <span class="mock-dot red"></span><span class="mock-dot yellow"></span><span class="mock-dot green"></span>
+          <div class="mock-url-bar">https://jira-pm.example.com/dashboard</div>
+        </div>
+        <div class="mock-browser-body">
+          <div class="mock-navbar"><span class="mock-navbar-brand">Jira PM</span><div class="mock-navbar-links"><span class="mock-navbar-link active">대시보드</span><span class="mock-navbar-link">백로그</span><span class="mock-navbar-link">보드</span><span class="mock-navbar-link">검색</span></div><span class="mock-navbar-user">dev@example.com</span></div>
+          <div style="font-size:10px;font-weight:600;color:var(--text2);margin:2px 0">대시보드 &mdash; Sprint 12</div>
+          <div class="mock-grid-4">
+            <div class="mock-card"><div class="mock-card-title">내 담당 이슈</div><div class="mock-card-val">7</div><div class="mock-card-sub">In Progress: 3</div></div>
+            <div class="mock-card"><div class="mock-card-title">Sprint Burndown</div><div class="mock-card-val" style="color:var(--orange)">42</div><div class="mock-card-sub">SP 잔여</div></div>
+            <div class="mock-card"><div class="mock-card-title">Velocity</div><div class="mock-card-val" style="color:var(--green)">68</div><div class="mock-card-sub">avg 3 sprints</div></div>
+            <div class="mock-card"><div class="mock-card-title">이슈 분포</div><div class="mock-card-val" style="color:var(--purple)">24</div><div class="mock-card-sub">총 이슈 수</div></div>
+          </div>
+          <div class="mock-annotation" data-label="RecentIssues">
+            <table class="mock-table"><thead><tr><th>키</th><th>제목</th><th>상태</th><th>SP</th></tr></thead><tbody>
+              <tr><td class="jql-result-key">PM-101</td><td>로그인 API 구현</td><td><span class="mock-status mock-status-progress">In Progress</span></td><td>5</td></tr>
+              <tr><td class="jql-result-key">PM-102</td><td>대시보드 UI</td><td><span class="mock-status mock-status-review">Code Review</span></td><td>3</td></tr>
+              <tr><td class="jql-result-key">PM-103</td><td>단위 테스트 작성</td><td><span class="mock-status mock-status-todo">Backlog</span></td><td>2</td></tr>
+            </tbody></table>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-panel" data-role="ROLE_DEV">
+      <details class="panel-section" name="panel-s4" open>
+        <summary><span class="ps-icon">&#x26A1;</span>액션</summary>
+        <div class="panel-content">
+          <table class="action-table"><thead><tr><th>액션</th><th>결과</th></tr></thead><tbody><tr><td>가젯 카드 클릭</td><td>해당 이슈 목록/상세 이동</td></tr><tr><td>이슈 행 클릭</td><td>이슈 상세 페이지</td></tr></tbody></table>
+        </div>
+      </details>
+      <details class="panel-section" name="panel-s4">
+        <summary><span class="ps-icon">&#x26A0;&#xFE0F;</span>오류</summary>
+        <div class="panel-content">
+          <table class="error-table"><thead><tr><th>코드</th><th>설명</th></tr></thead><tbody><tr><td class="error-code">401</td><td>미인증 (로그인 페이지 이동)</td></tr><tr><td class="error-code">403</td><td>권한 없음</td></tr></tbody></table>
+        </div>
+      </details>
+      <details class="panel-section" name="panel-s4">
+        <summary><span class="ps-icon">&#x1F4E6;</span>ViewModel</summary>
+        <div class="panel-content">
+          <div class="vm-tree"><div><span class="vm-key">assignedIssues</span>: <span class="vm-arr">Issue[]</span></div><div><span class="vm-key">burndownData</span>: <span class="vm-type">BurndownDTO</span></div><div><span class="vm-key">velocity</span>: <span class="vm-type">Number</span></div><div><span class="vm-key">issueDistribution</span>: <span class="vm-type">Map</span></div></div>
+        </div>
+      </details>
+      <details class="panel-section" name="panel-s4">
+        <summary><span class="ps-icon">&#x2705;</span>유효성</summary>
+        <div class="panel-content">
+          <div class="perm-row"><span class="perm-icon">&#x1F510;</span><span>인증 필수 (JWT 토큰)</span></div>
+          <div class="perm-row"><span class="perm-icon">&#x1F464;</span><span>ROLE_DEV 이상</span></div>
+        </div>
+      </details>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SLIDE 05: US-002 BACKLOG ===== -->
+<div class="slide sb-slide" data-role="ROLE_PO" data-id="05" data-set="us002-backlog">
+  <div class="slide-header" data-role="ROLE_PO">
+    <span class="project-name">Jira PM |</span>
+    <span class="screen-id">ROLE_PO 백로그 관리</span>
+    <span class="role-badge">ROLE_PO</span>
+  </div>
+  <div class="slide-badges">
+    <span class="method-label method-get">GET</span>
+    <span class="url-badge">/backlog</span>
+    <span class="sep">|</span>
+    <span class="auth-badge">&#x1F510; ROLE_PO</span>
+  </div>
+  <div class="slide-main">
+    <div class="slide-mockup">
+      <div class="mock-browser">
+        <div class="mock-browser-bar">
+          <span class="mock-dot red"></span><span class="mock-dot yellow"></span><span class="mock-dot green"></span>
+          <div class="mock-url-bar">https://jira-pm.example.com/backlog</div>
+        </div>
+        <div class="mock-browser-body">
+          <div class="mock-navbar">
+            <span class="mock-navbar-brand">Jira PM</span>
+            <div class="mock-navbar-links">
+              <span class="mock-navbar-link">대시보드</span>
+              <span class="mock-navbar-link active">백로그</span>
+              <span class="mock-navbar-link">보드</span>
+            </div>
+            <span class="mock-navbar-user">po@example.com</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:2px">
+            <div style="font-size:10px;font-weight:600;color:var(--text2)">백로그 — Project: Jira PM v3.0</div>
+            <div class="mock-btn mock-btn-primary">+ 이슈 생성</div>
+          </div>
+          <div class="sprint-box">
+            <div class="sprint-label">Sprint 12 (2026-03-15 ~ 2026-03-28)</div>
+            <div class="issue-row">
+              <span class="drag-handle">&#x283F;</span>
+              <span class="jql-result-key">PM-101</span>
+              <span class="mock-status mock-status-progress" style="margin:0 4px">In Progress</span>
+              <span style="flex:1;font-size:8px">로그인 API 구현</span>
+              <span class="priority-badge priority-high">HIGH</span>
+              <span class="mock-sp-badge">5</span>
+            </div>
+            <div class="issue-row">
+              <span class="drag-handle">&#x283F;</span>
+              <span class="jql-result-key">PM-102</span>
+              <span class="mock-status mock-status-review" style="margin:0 4px">Review</span>
+              <span style="flex:1;font-size:8px">대시보드 UI 개발</span>
+              <span class="priority-badge priority-medium">MED</span>
+              <span class="mock-sp-badge">3</span>
+            </div>
+          </div>
+          <div class="sprint-box" style="border-color:var(--border2)">
+            <div class="sprint-label" style="color:var(--text2)">백로그 (미배정)</div>
+            <div class="issue-row">
+              <span class="drag-handle">&#x283F;</span>
+              <span class="jql-result-key">PM-105</span>
+              <span class="mock-status mock-status-todo" style="margin:0 4px">Backlog</span>
+              <span style="flex:1;font-size:8px">알림 기능 구현</span>
+              <span class="priority-badge priority-low">LOW</span>
+              <span class="mock-sp-badge">8</span>
+            </div>
+            <div class="issue-row">
+              <span class="drag-handle">&#x283F;</span>
+              <span class="jql-result-key">PM-106</span>
+              <span class="mock-status mock-status-todo" style="margin:0 4px">Backlog</span>
+              <span style="flex:1;font-size:8px">Flutter 모바일 앱 초기 설정</span>
+              <span class="priority-badge priority-medium">MED</span>
+              <span class="mock-sp-badge">13</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-panel" data-role="ROLE_PO">
+      <details class="panel-section" name="panel-s5" open>
+        <summary><span class="ps-icon">&#x26A1;</span>액션</summary>
+        <div class="panel-content">
+          <table class="action-table">
+            <thead><tr><th>액션</th><th>메서드</th><th>엔드포인트</th></tr></thead>
+            <tbody>
+              <tr><td>이슈 드래그 스프린트 배정</td><td class="http-put">PUT</td><td style="font-family:var(--mono);font-size:8px">/issue/{id}/sprint</td></tr>
+              <tr><td>이슈 생성 버튼</td><td>—</td><td>이슈 생성 모달 오픈</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </details>
+      <details class="panel-section" name="panel-s5">
+        <summary><span class="ps-icon">&#x26A0;&#xFE0F;</span>오류</summary>
+        <div class="panel-content">
+          <table class="error-table">
+            <thead><tr><th>코드</th><th>설명</th></tr></thead>
+            <tbody>
+              <tr><td class="error-code">403</td><td>PO 권한 없음</td></tr>
+              <tr><td class="error-code">409</td><td>스프린트 용량 초과</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </details>
+      <details class="panel-section" name="panel-s5">
+        <summary><span class="ps-icon">&#x1F4E6;</span>ViewModel</summary>
+        <div class="panel-content">
+          <div class="vm-tree">
+            <div><span class="vm-key">sprints</span>: <span class="vm-arr">Sprint[]</span></div>
+            <div><span class="vm-key">backlogIssues</span>: <span class="vm-arr">Issue[]</span></div>
+            <div><span class="vm-key">totalSP</span>: <span class="vm-type">Number</span></div>
+          </div>
+        </div>
+      </details>
+      <details class="panel-section" name="panel-s5">
+        <summary><span class="ps-icon">&#x2705;</span>유효성</summary>
+        <div class="panel-content">
+          <div class="perm-row"><span class="perm-icon">&#x1F510;</span><span>ROLE_PO 권한 필수</span></div>
+        </div>
+      </details>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SLIDE 06: US-002 ISSUE CREATE ===== -->
+<div class="slide sb-slide" data-role="ROLE_PO" data-id="06" data-set="us002-backlog">
+  <div class="slide-header" data-role="ROLE_PO">
+    <span class="project-name">Jira PM |</span>
+    <span class="screen-id">ROLE_PO 이슈 생성</span>
+    <span class="role-badge">ROLE_PO</span>
+  </div>
+  <div class="slide-badges">
+    <span class="method-label method-post">POST</span>
+    <span class="url-badge">/api/2/issue</span>
+    <span class="sep">|</span>
+    <span class="auth-badge">&#x1F510; ROLE_PO</span>
+  </div>
+  <div class="slide-main">
+    <div class="slide-mockup">
+      <div class="mock-browser">
+        <div class="mock-browser-bar">
+          <span class="mock-dot red"></span><span class="mock-dot yellow"></span><span class="mock-dot green"></span>
+          <div class="mock-url-bar">https://jira-pm.example.com/backlog#create</div>
+        </div>
+        <div class="mock-browser-body" style="align-items:center;justify-content:center">
+          <div class="mock-annotation" data-label="IssueCreateModal" style="width:300px;max-width:100%">
+            <div style="font-size:11px;font-weight:700;color:var(--text);margin-bottom:8px">이슈 생성</div>
+            <div class="mock-form">
+              <div class="mock-form-row-2">
+                <div class="mock-form-row">
+                  <div class="mock-form-label">이슈 타입 *</div>
+                  <div class="mock-form-select">Story &#x25BE;</div>
+                </div>
+                <div class="mock-form-row">
+                  <div class="mock-form-label">우선순위</div>
+                  <div class="mock-form-select">High &#x25BE;</div>
+                </div>
+              </div>
+              <div class="mock-form-row">
+                <div class="mock-form-label">제목 * (max 200)</div>
+                <div class="mock-form-input">로그인 화면 구현</div>
+              </div>
+              <div class="mock-form-row">
+                <div class="mock-form-label">설명 (max 5000)</div>
+                <div class="mock-form-textarea">OAuth2 + JWT 기반 로그인 화면 구현...</div>
+              </div>
+              <div class="mock-form-row-2">
+                <div class="mock-form-row">
+                  <div class="mock-form-label">에픽</div>
+                  <div class="mock-form-select">인증 시스템 &#x25BE;</div>
+                </div>
+                <div class="mock-form-row">
+                  <div class="mock-form-label">담당자</div>
+                  <div class="mock-form-select">dev1 &#x25BE;</div>
+                </div>
+              </div>
+              <div class="mock-form-row">
+                <div class="mock-form-label">Story Points</div>
+                <div class="mock-form-select">5 &#x25BE;</div>
+              </div>
+              <div class="mock-btn-row">
+                <div class="mock-btn mock-btn-primary" style="flex:1;text-align:center">생성</div>
+                <div class="mock-btn mock-btn-secondary">취소</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-panel" data-role="ROLE_PO">
+      <details class="panel-section" name="panel-s6" open>
+        <summary><span class="ps-icon">&#x26A1;</span>액션</summary>
+        <div class="panel-content">
+          <table class="action-table">
+            <thead><tr><th>액션</th><th>메서드</th><th>엔드포인트</th></tr></thead>
+            <tbody>
+              <tr><td>생성 버튼</td><td class="http-post">POST</td><td style="font-family:var(--mono);font-size:8px">/api/2/issue</td></tr>
+              <tr><td>취소 버튼</td><td>—</td><td>모달 닫기</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </details>
+      <details class="panel-section" name="panel-s6">
+        <summary><span class="ps-icon">&#x26A0;&#xFE0F;</span>오류</summary>
+        <div class="panel-content">
+          <table class="error-table">
+            <thead><tr><th>코드</th><th>설명</th></tr></thead>
+            <tbody>
+              <tr><td class="error-code">400</td><td>필수 필드 누락</td></tr>
+              <tr><td class="error-code">403</td><td>PO 권한 없음</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </details>
+      <details class="panel-section" name="panel-s6">
+        <summary><span class="ps-icon">&#x1F4E6;</span>ViewModel</summary>
+        <div class="panel-content">
+          <div class="vm-tree">
+            <div><span class="vm-key">projectId</span>: <span class="vm-type">Long</span></div>
+            <div><span class="vm-key">issueType</span>: <span class="vm-type">Enum</span></div>
+            <div><span class="vm-key">title</span>: <span class="vm-type">String</span></div>
+            <div><span class="vm-key">description</span>: <span class="vm-type">String</span></div>
+            <div><span class="vm-key">epicId</span>: <span class="vm-type">Long?</span></div>
+            <div><span class="vm-key">priority</span>: <span class="vm-type">Enum</span></div>
+            <div><span class="vm-key">assignee</span>: <span class="vm-type">String</span></div>
+            <div><span class="vm-key">storyPoints</span>: <span class="vm-type">Int</span></div>
+          </div>
+        </div>
+      </details>
+      <details class="panel-section" name="panel-s6">
+        <summary><span class="ps-icon">&#x2705;</span>유효성</summary>
+        <div class="panel-content">
+          <table class="valid-table">
+            <thead><tr><th>필드</th><th>규칙</th></tr></thead>
+            <tbody>
+              <tr><td>title</td><td>required, max 200자</td></tr>
+              <tr><td>description</td><td>max 5000자</td></tr>
+              <tr><td>issueType</td><td>STORY|TASK|BUG|EPIC</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </details>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SLIDE 07: US-003 SPRINT CREATE ===== -->
+<div class="slide sb-slide" data-role="ROLE_SM" data-id="07" data-set="us003-sprint">
+  <div class="slide-header" data-role="ROLE_SM">
+    <span class="project-name">Jira PM |</span>
+    <span class="screen-id">ROLE_SM 스프린트 생성</span>
+    <span class="role-badge">ROLE_SM</span>
+  </div>
+  <div class="slide-badges">
+    <span class="method-label method-post">POST</span>
+    <span class="url-badge">/agile/1.0/sprint</span>
+    <span class="sep">|</span>
+    <span class="auth-badge">&#x1F510; ROLE_SM</span>
+  </div>
+  <div class="slide-main">
+    <div class="slide-mockup">
+      <div class="mock-browser">
+        <div class="mock-browser-bar">
+          <span class="mock-dot red"></span><span class="mock-dot yellow"></span><span class="mock-dot green"></span>
+          <div class="mock-url-bar">https://jira-pm.example.com/sprint/create</div>
+        </div>
+        <div class="mock-browser-body" style="align-items:center;justify-content:center">
+          <div class="mock-annotation" data-label="SprintCreateDialog" style="width:290px">
+            <div style="font-size:11px;font-weight:700;color:var(--text);margin-bottom:8px">스프린트 생성</div>
+            <div class="mock-form">
+              <div class="mock-form-row">
+                <div class="mock-form-label">스프린트 이름 *</div>
+                <div class="mock-form-input">Sprint 13</div>
+              </div>
+              <div class="mock-form-row-2">
+                <div class="mock-form-row">
+                  <div class="mock-form-label">시작일 *</div>
+                  <div class="mock-form-input">2026-03-29</div>
+                </div>
+                <div class="mock-form-row">
+                  <div class="mock-form-label">종료일 *</div>
+                  <div class="mock-form-input">2026-04-11</div>
+                </div>
+              </div>
+              <div class="mock-form-row">
+                <div class="mock-form-label">스프린트 목표</div>
+                <div class="mock-form-textarea">인증 시스템 완성 및 Flutter MVP 배포</div>
+              </div>
+              <div class="mock-form-row">
+                <div class="mock-form-label">팀 용량 (SP)</div>
+                <div class="mock-form-input">60</div>
+              </div>
+              <div class="mock-btn-row">
+                <div class="mock-btn mock-btn-primary" style="flex:1;text-align:center">생성</div>
+                <div class="mock-btn mock-btn-secondary">취소</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-panel" data-role="ROLE_SM">
+      <details class="panel-section" name="panel-s7" open>
+        <summary><span class="ps-icon">&#x26A1;</span>액션</summary>
+        <div class="panel-content">
+          <table class="action-table">
+            <thead><tr><th>액션</th><th>메서드</th><th>엔드포인트</th></tr></thead>
+            <tbody>
+              <tr><td>스프린트 생성</td><td class="http-post">POST</td><td style="font-family:var(--mono);font-size:8px">/agile/1.0/sprint</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </details>
+      <details class="panel-section" name="panel-s7">
+        <summary><span class="ps-icon">&#x26A0;&#xFE0F;</span>오류</summary>
+        <div class="panel-content">
+          <table class="error-table">
+            <thead><tr><th>코드</th><th>설명</th></tr></thead>
+            <tbody>
+              <tr><td class="error-code">400</td><td>날짜 오류 (startDate &gt;= endDate)</td></tr>
+              <tr><td class="error-code">409</td><td>스프린트 이름 중복</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </details>
+      <details class="panel-section" name="panel-s7">
+        <summary><span class="ps-icon">&#x1F4E6;</span>ViewModel</summary>
+        <div class="panel-content">
+          <div class="vm-tree">
+            <div><span class="vm-key">name</span>: <span class="vm-type">String</span></div>
+            <div><span class="vm-key">startDate</span>: <span class="vm-type">LocalDate</span></div>
+            <div><span class="vm-key">endDate</span>: <span class="vm-type">LocalDate</span></div>
+            <div><span class="vm-key">goal</span>: <span class="vm-type">String?</span></div>
+            <div><span class="vm-key">capacity</span>: <span class="vm-type">Int</span></div>
+          </div>
+        </div>
+      </details>
+      <details class="panel-section" name="panel-s7">
+        <summary><span class="ps-icon">&#x2705;</span>유효성</summary>
+        <div class="panel-content">
+          <table class="valid-table">
+            <thead><tr><th>필드</th><th>규칙</th></tr></thead>
+            <tbody>
+              <tr><td>name</td><td>required, max 100자</td></tr>
+              <tr><td>날짜</td><td>startDate &lt; endDate</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </details>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SLIDE 08: US-003 PLANNING POKER ===== -->
+<div class="slide sb-slide" data-role="ROLE_SM" data-id="08" data-set="us003-sprint">
+  <div class="slide-header" data-role="ROLE_SM">
+    <span class="project-name">Jira PM |</span>
+    <span class="screen-id">ROLE_SM Planning Poker</span>
+    <span class="role-badge">ROLE_SM</span>
+  </div>
+  <div class="slide-badges">
+    <span class="method-label method-post">POST</span>
+    <span class="url-badge">/agile/1.0/sprint/{id}/poker</span>
+    <span class="sep">|</span>
+    <span class="auth-badge">&#x1F510; ROLE_SM</span>
+  </div>
+  <div class="slide-main">
+    <div class="slide-mockup">
+      <div class="mock-browser">
+        <div class="mock-browser-bar">
+          <span class="mock-dot red"></span><span class="mock-dot yellow"></span><span class="mock-dot green"></span>
+          <div class="mock-url-bar">https://jira-pm.example.com/sprint/13/poker</div>
+        </div>
+        <div class="mock-browser-body">
+          <div class="mock-annotation" data-label="PlanningPoker" style="flex:1">
+            <div style="font-size:9px;font-weight:600;color:var(--text2);margin-bottom:4px">PM-106 — Flutter 모바일 앱 초기 설정</div>
+            <div style="font-size:8px;color:var(--text3);margin-bottom:8px">Flutter 3.41 + Riverpod 기반 초기 프로젝트 구조 설정 및 CI/CD 파이프라인 구성</div>
+            <div style="font-size:8px;font-weight:600;color:var(--text2);margin-bottom:4px">카드를 선택하세요:</div>
+            <div class="poker-cards">
+              <div class="poker-card">1</div>
+              <div class="poker-card">2</div>
+              <div class="poker-card selected">3</div>
+              <div class="poker-card">5</div>
+              <div class="poker-card">8</div>
+              <div class="poker-card">13</div>
+              <div class="poker-card">?</div>
+              <div class="poker-card">&#x2615;</div>
+            </div>
+            <div style="font-size:8px;font-weight:600;color:var(--text2);margin:6px 0 3px">참가자 상태:</div>
+            <table class="mock-table">
+              <thead><tr><th>참가자</th><th>상태</th><th>투표</th></tr></thead>
+              <tbody>
+                <tr><td>dev1</td><td><span class="mock-status mock-status-done">완료</span></td><td style="font-family:var(--mono)">?</td></tr>
+                <tr><td>dev2</td><td><span class="mock-status mock-status-done">완료</span></td><td style="font-family:var(--mono)">?</td></tr>
+                <tr><td>sm</td><td><span class="mock-status mock-status-progress">투표중</span></td><td style="font-family:var(--mono)">3</td></tr>
+              </tbody>
+            </table>
+            <div class="mock-btn-row" style="margin-top:6px">
+              <div class="mock-btn mock-btn-primary">전체 공개</div>
+              <div class="mock-btn mock-btn-secondary">다시 투표</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-panel" data-role="ROLE_SM">
+      <details class="panel-section" name="panel-s8" open>
+        <summary><span class="ps-icon">&#x26A1;</span>액션</summary>
+        <div class="panel-content">
+          <table class="action-table">
+            <thead><tr><th>액션</th><th>메서드</th><th>엔드포인트</th></tr></thead>
+            <tbody>
+              <tr><td>카드 선택</td><td class="http-post">POST</td><td style="font-family:var(--mono);font-size:8px">/poker/vote</td></tr>
+              <tr><td>전체 공개</td><td class="http-post">POST</td><td style="font-family:var(--mono);font-size:8px">/poker/reveal</td></tr>
+              <tr><td>SP 확정</td><td class="http-post">POST</td><td style="font-family:var(--mono);font-size:8px">/poker/finalize</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </details>
+      <details class="panel-section" name="panel-s8">
+        <summary><span class="ps-icon">&#x26A0;&#xFE0F;</span>오류</summary>
+        <div class="panel-content">
+          <table class="error-table">
+            <thead><tr><th>코드</th><th>설명</th></tr></thead>
+            <tbody>
+              <tr><td class="error-code">400</td><td>세션 없음</td></tr>
+              <tr><td class="error-code">409</td><td>미투표 참가자 존재</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </details>
+      <details class="panel-section" name="panel-s8">
+        <summary><span class="ps-icon">&#x1F4E6;</span>ViewModel</summary>
+        <div class="panel-content">
+          <div class="vm-tree">
+            <div><span class="vm-key">sessionId</span>: <span class="vm-type">UUID</span></div>
+            <div><span class="vm-key">issueKey</span>: <span class="vm-type">String</span></div>
+            <div><span class="vm-key">participants</span>: <span class="vm-arr">User[]</span></div>
+            <div><span class="vm-key">votes</span>: <span class="vm-arr">Vote[]</span></div>
+          </div>
+        </div>
+      </details>
+      <details class="panel-section" name="panel-s8">
+        <summary><span class="ps-icon">&#x2705;</span>유효성</summary>
+        <div class="panel-content">
+          <div class="perm-row"><span class="perm-icon">&#x1F510;</span><span>모든 참가자 투표 완료 후 공개 가능</span></div>
+          <div class="perm-row"><span class="perm-icon">&#x1F510;</span><span>ROLE_SM 세션 관리 권한</span></div>
+        </div>
+      </details>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SLIDE 09: US-004 SCRUM BOARD ===== -->
+<div class="slide sb-slide" data-role="ROLE_DEV" data-id="09" data-set="us004-board">
+  <div class="slide-header" data-role="ROLE_DEV">
+    <span class="project-name">Jira PM |</span>
+    <span class="screen-id">ROLE_DEV 스크럼 보드</span>
+    <span class="role-badge">ROLE_DEV</span>
+  </div>
+  <div class="slide-badges">
+    <span class="method-label method-get">GET</span>
+    <span class="url-badge">/agile/1.0/board/{id}/issues</span>
+    <span class="sep">|</span>
+    <span class="auth-badge">&#x1F510; ROLE_DEV</span>
+  </div>
+  <div class="slide-main">
+    <div class="slide-mockup">
+      <div class="mock-browser">
+        <div class="mock-browser-bar">
+          <span class="mock-dot red"></span><span class="mock-dot yellow"></span><span class="mock-dot green"></span>
+          <div class="mock-url-bar">https://jira-pm.example.com/board/1</div>
+        </div>
+        <div class="mock-browser-body" style="padding:6px">
+          <div class="mock-navbar" style="margin-bottom:4px">
+            <span class="mock-navbar-brand">Jira PM</span>
+            <div class="mock-navbar-links">
+              <span class="mock-navbar-link">대시보드</span>
+              <span class="mock-navbar-link active">보드</span>
+            </div>
+            <span class="mock-navbar-user">dev@example.com</span>
+          </div>
+          <div class="mock-board">
+            <div class="mock-column">
+              <div class="mock-col-header">Backlog<span class="mock-col-wip">2</span></div>
+              <div class="mock-col-body">
+                <div class="mock-issue-card">
+                  <div class="mock-issue-key">PM-105</div>
+                  <div class="mock-issue-title">알림 기능</div>
+                  <div class="mock-issue-meta"><div class="mock-avatar">A</div><span class="mock-sp-badge">8</span></div>
+                </div>
+              </div>
+            </div>
+            <div class="mock-column">
+              <div class="mock-col-header">Selected<span class="mock-col-wip">1</span></div>
+              <div class="mock-col-body">
+                <div class="mock-issue-card">
+                  <div class="mock-issue-key">PM-103</div>
+                  <div class="mock-issue-title">단위 테스트</div>
+                  <div class="mock-issue-meta"><div class="mock-avatar">B</div><span class="mock-sp-badge">2</span></div>
+                </div>
+              </div>
+            </div>
+            <div class="mock-column">
+              <div class="mock-col-header">In Progress<span class="mock-col-wip over">3/3</span></div>
+              <div class="mock-col-body">
+                <div class="mock-issue-card">
+                  <div class="mock-issue-key">PM-101</div>
+                  <div class="mock-issue-title">로그인 API</div>
+                  <div class="mock-issue-meta"><div class="mock-avatar">C</div><span class="mock-sp-badge">5</span></div>
+                </div>
+                <div class="mock-issue-card">
+                  <div class="mock-issue-key">PM-104</div>
+                  <div class="mock-issue-title">DB 마이그레이션</div>
+                  <div class="mock-issue-meta"><div class="mock-avatar">D</div><span class="mock-sp-badge">3</span></div>
+                </div>
+              </div>
+            </div>
+            <div class="mock-column">
+              <div class="mock-col-header">Code Review<span class="mock-col-wip">1</span></div>
+              <div class="mock-col-body">
+                <div class="mock-issue-card">
+                  <div class="mock-issue-key">PM-102</div>
+                  <div class="mock-issue-title">대시보드 UI</div>
+                  <div class="mock-issue-meta"><div class="mock-avatar">E</div><span class="mock-sp-badge">3</span></div>
+                </div>
+              </div>
+            </div>
+            <div class="mock-column">
+              <div class="mock-col-header">QA<span class="mock-col-wip">0</span></div>
+              <div class="mock-col-body"></div>
+            </div>
+            <div class="mock-column">
+              <div class="mock-col-header">Done<span class="mock-col-wip">3</span></div>
+              <div class="mock-col-body">
+                <div class="mock-issue-card" style="opacity:.7">
+                  <div class="mock-issue-key">PM-099</div>
+                  <div class="mock-issue-title">ERD 설계</div>
+                  <div class="mock-issue-meta"><span class="mock-sp-badge">5</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-panel" data-role="ROLE_DEV">
+      <details class="panel-section" name="panel-s9" open>
+        <summary><span class="ps-icon">&#x26A1;</span>액션</summary>
+        <div class="panel-content">
+          <table class="action-table">
+            <thead><tr><th>액션</th><th>메서드</th><th>엔드포인트</th></tr></thead>
+            <tbody>
+              <tr><td>카드 드래그</td><td class="http-put">PUT</td><td style="font-family:var(--mono);font-size:8px">/issue/{id}/transitions</td></tr>
+              <tr><td>카드 클릭</td><td class="http-get">GET</td><td>이슈 상세 페이지</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </details>
+      <details class="panel-section" name="panel-s9">
+        <summary><span class="ps-icon">&#x26A0;&#xFE0F;</span>오류</summary>
+        <div class="panel-content">
+          <table class="error-table">
+            <thead><tr><th>코드</th><th>설명</th></tr></thead>
+            <tbody>
+              <tr><td class="error-code">409</td><td>WIP 한도 초과</td></tr>
+              <tr><td class="error-code">422</td><td>워크플로우 전환 규칙 위반</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </details>
+      <details class="panel-section" name="panel-s9">
+        <summary><span class="ps-icon">&#x1F4E6;</span>ViewModel</summary>
+        <div class="panel-content">
+          <div class="vm-tree">
+            <div><span class="vm-key">boardId</span>: <span class="vm-type">Long</span></div>
+            <div><span class="vm-key">columns</span>: <span class="vm-arr">Column[]</span></div>
+            <div><span class="vm-key">issues</span>: <span class="vm-arr">Issue[]</span></div>
+          </div>
+        </div>
+      </details>
+      <details class="panel-section" name="panel-s9">
+        <summary><span class="ps-icon">&#x2705;</span>유효성</summary>
+        <div class="panel-content">
+          <div class="perm-row"><span class="perm-icon">&#x1F510;</span><span>워크플로우 전환 규칙 적용</span></div>
+          <div class="perm-row"><span class="perm-icon">&#x1F510;</span><span>ROLE_DEV 이상</span></div>
+        </div>
+      </details>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SLIDE 10: US-004 ISSUE DETAIL ===== -->
+<div class="slide sb-slide" data-role="ROLE_DEV" data-id="10" data-set="us004-board">
+  <div class="slide-header" data-role="ROLE_DEV">
+    <span class="project-name">Jira PM |</span>
+    <span class="screen-id">ROLE_DEV 이슈 상세</span>
+    <span class="role-badge">ROLE_DEV</span>
+  </div>
+  <div class="slide-badges">
+    <span class="method-label method-get">GET</span>
+    <span class="url-badge">/api/2/issue/{key}</span>
+    <span class="sep">|</span>
+    <span class="auth-badge">&#x1F510; ROLE_DEV</span>
+  </div>
+  <div class="slide-main">
+    <div class="slide-mockup">
+      <div class="mock-browser">
+        <div class="mock-browser-bar">
+          <span class="mock-dot red"></span><span class="mock-dot yellow"></span><span class="mock-dot green"></span>
+          <div class="mock-url-bar">https://jira-pm.example.com/issue/PM-101</div>
+        </div>
+        <div class="mock-browser-body">
+          <div style="display:flex;gap:6px;flex:1;overflow:hidden">
+            <div style="flex:1;display:flex;flex-direction:column;gap:5px;overflow-y:auto">
+              <div style="display:flex;align-items:center;gap:6px">
+                <span class="jql-result-key" style="font-size:10px">PM-101</span>
+                <span class="mock-status mock-status-progress">In Progress</span>
+                <span class="priority-badge priority-high">HIGH</span>
+              </div>
+              <div style="font-size:11px;font-weight:700;color:var(--text)">로그인 API 구현</div>
+              <div style="font-size:8px;color:var(--text2);line-height:1.5">OAuth2 + JWT 기반 인증 시스템. Spring Security 6.x 적용, Refresh Token 관리 포함.</div>
+              <div class="comment-box">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px">
+                  <span class="comment-author">dev1</span>
+                  <div style="display:flex;gap:4px">
+                    <span class="mock-btn mock-btn-secondary" style="padding:1px 5px;font-size:7px">수정</span>
+                    <span class="mock-btn mock-btn-danger" style="padding:1px 5px;font-size:7px">삭제</span>
+                  </div>
+                </div>
+                <div style="font-size:8px;color:var(--text2)">Refresh Token rotation 전략으로 보안 강화 완료</div>
+              </div>
+              <div class="comment-box" style="border-color:var(--border2)">
+                <div class="comment-author">dev2</div>
+                <div style="font-size:8px;color:var(--text2)">단위 테스트 커버리지 85% 달성</div>
+              </div>
+            </div>
+            <div style="width:110px;flex-shrink:0;display:flex;flex-direction:column;gap:4px;font-size:8px">
+              <div style="font-weight:600;color:var(--text2);border-bottom:1px solid var(--border);padding-bottom:3px">상세 정보</div>
+              <div style="color:var(--text3)">담당자</div><div style="color:var(--text)">dev1</div>
+              <div style="color:var(--text3)">Reporter</div><div style="color:var(--text)">po@example.com</div>
+              <div style="color:var(--text3)">Story Points</div><div style="font-family:var(--mono);color:var(--accent)">5</div>
+              <div style="color:var(--text3)">Sprint</div><div style="color:var(--text)">Sprint 12</div>
+              <div style="color:var(--text3)">에픽</div><div style="color:var(--purple)">인증 시스템</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-panel" data-role="ROLE_DEV">
+      <details class="panel-section" name="panel-s10" open>
+        <summary><span class="ps-icon">&#x26A1;</span>액션</summary>
+        <div class="panel-content">
+          <table class="action-table">
+            <thead><tr><th>액션</th><th>메서드</th><th>엔드포인트</th></tr></thead>
+            <tbody>
+              <tr><td>인라인 편집</td><td class="http-put">PUT</td><td style="font-family:var(--mono);font-size:8px">/issue/{key}</td></tr>
+              <tr><td>댓글 추가</td><td class="http-post">POST</td><td style="font-family:var(--mono);font-size:8px">/issue/{key}/comment</td></tr>
+              <tr><td>댓글 수정</td><td class="http-put">PUT</td><td style="font-family:var(--mono);font-size:8px">/comment/{id}</td></tr>
+              <tr><td>댓글 삭제</td><td class="http-delete">DELETE</td><td style="font-family:var(--mono);font-size:8px">/comment/{id}</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </details>
+      <details class="panel-section" name="panel-s10">
+        <summary><span class="ps-icon">&#x26A0;&#xFE0F;</span>오류</summary>
+        <div class="panel-content">
+          <table class="error-table">
+            <thead><tr><th>코드</th><th>설명</th></tr></thead>
+            <tbody>
+              <tr><td class="error-code">404</td><td>이슈 없음</td></tr>
+              <tr><td class="error-code">409</td><td>Optimistic lock 버전 충돌</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </details>
+      <details class="panel-section" name="panel-s10">
+        <summary><span class="ps-icon">&#x1F4E6;</span>ViewModel</summary>
+        <div class="panel-content">
+          <div class="vm-tree">
+            <div><span class="vm-key">issueKey</span>: <span class="vm-type">String</span></div>
+            <div><span class="vm-key">status</span>: <span class="vm-type">Enum</span></div>
+            <div><span class="vm-key">assignee</span>: <span class="vm-type">String</span></div>
+            <div><span class="vm-key">storyPoints</span>: <span class="vm-type">Int</span></div>
+            <div><span class="vm-key">comments</span>: <span class="vm-arr">Comment[]</span></div>
+            <div><span class="vm-key">history</span>: <span class="vm-arr">History[]</span></div>
+          </div>
+        </div>
+      </details>
+      <details class="panel-section" name="panel-s10">
+        <summary><span class="ps-icon">&#x2705;</span>유효성</summary>
+        <div class="panel-content">
+          <div class="perm-row"><span class="perm-icon">&#x1F510;</span><span>상태 전환 규칙 적용</span></div>
+        </div>
+      </details>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SLIDE 11: US-005 CODE REVIEW ===== -->
+<div class="slide sb-slide" data-role="ROLE_QA" data-id="11" data-set="us005-review">
+  <div class="slide-header" data-role="ROLE_QA">
+    <span class="project-name">Jira PM |</span>
+    <span class="screen-id">ROLE_QA 코드 리뷰 및 QA</span>
+    <span class="role-badge">ROLE_QA</span>
+  </div>
+  <div class="slide-badges">
+    <span class="method-label method-put">PUT</span>
+    <span class="url-badge">/api/2/issue/{key}/transitions</span>
+    <span class="sep">|</span>
+    <span class="auth-badge">&#x1F510; ROLE_QA</span>
+  </div>
+  <div class="slide-main">
+    <div class="slide-mockup">
+      <div class="mock-browser">
+        <div class="mock-browser-bar">
+          <span class="mock-dot red"></span><span class="mock-dot yellow"></span><span class="mock-dot green"></span>
+          <div class="mock-url-bar">https://jira-pm.example.com/issue/PM-102/review</div>
+        </div>
+        <div class="mock-browser-body">
+          <div class="mock-annotation" data-label="PRInfo" style="margin-bottom:5px">
+            <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px">
+              <span style="font-size:9px;font-weight:600;color:var(--accent)">PR #47</span>
+              <span class="mock-status mock-status-review">Review</span>
+              <span style="font-size:8px;color:var(--text2)">feat/pm-102-dashboard-ui</span>
+            </div>
+            <div style="font-size:8px;color:var(--text2)">변경 파일: <span style="font-family:var(--mono);color:var(--text)">+142 / -38</span></div>
+            <div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:3px">
+              <span class="pr-file">DashboardController.java</span>
+              <span class="pr-file">DashboardService.java</span>
+              <span class="pr-file">DashboardDTO.java</span>
+            </div>
+          </div>
+          <div class="comment-box" style="margin-bottom:4px">
+            <div style="display:flex;justify-content:space-between;margin-bottom:2px">
+              <span class="comment-author" style="color:var(--pink)">qa@example.com</span>
+              <span style="font-size:7px;color:var(--text3)">line 42</span>
+            </div>
+            <div style="font-size:8px;color:var(--text2)">DashboardDTO null 체크 누락. Optional 처리 필요.</div>
+          </div>
+          <div class="comment-box">
+            <div class="comment-author" style="color:var(--green)">dev2@example.com</div>
+            <div style="font-size:8px;color:var(--text2)">수정 완료. Optional.ofNullable 적용함.</div>
+          </div>
+          <div class="mock-btn-row" style="margin-top:8px">
+            <div class="mock-btn mock-btn-success">승인 (QA로 이동)</div>
+            <div class="mock-btn mock-btn-danger">변경 요청</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-panel" data-role="ROLE_QA">
+      <details class="panel-section" name="panel-s11" open>
+        <summary><span class="ps-icon">&#x26A1;</span>액션</summary>
+        <div class="panel-content">
+          <table class="action-table">
+            <thead><tr><th>액션</th><th>결과</th></tr></thead>
+            <tbody>
+              <tr><td>승인 버튼</td><td>이슈 상태 QA로 전환</td></tr>
+              <tr><td>변경 요청</td><td>이슈 상태 In Progress로 복귀</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </details>
+      <details class="panel-section" name="panel-s11">
+        <summary><span class="ps-icon">&#x26A0;&#xFE0F;</span>오류</summary>
+        <div class="panel-content">
+          <table class="error-table">
+            <thead><tr><th>코드</th><th>설명</th></tr></thead>
+            <tbody>
+              <tr><td class="error-code">403</td><td>리뷰어 권한 없음</td></tr>
+              <tr><td class="error-code">422</td><td>상태 전환 불가</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </details>
+      <details class="panel-section" name="panel-s11">
+        <summary><span class="ps-icon">&#x1F4E6;</span>ViewModel</summary>
+        <div class="panel-content">
+          <div class="vm-tree">
+            <div><span class="vm-key">prNumber</span>: <span class="vm-type">Int</span></div>
+            <div><span class="vm-key">files</span>: <span class="vm-arr">FileChange[]</span></div>
+            <div><span class="vm-key">reviewComments</span>: <span class="vm-arr">Comment[]</span></div>
+          </div>
+        </div>
+      </details>
+      <details class="panel-section" name="panel-s11">
+        <summary><span class="ps-icon">&#x2705;</span>유효성</summary>
+        <div class="panel-content">
+          <div class="perm-row"><span class="perm-icon">&#x1F510;</span><span>ROLE_QA 권한 필수</span></div>
+        </div>
+      </details>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SLIDE 12: US-006 RELEASE ===== -->
+<div class="slide sb-slide" data-role="ROLE_PO" data-id="12" data-set="us006-release">
+  <div class="slide-header" data-role="ROLE_PO">
+    <span class="project-name">Jira PM |</span>
+    <span class="screen-id">ROLE_PO 릴리즈 관리</span>
+    <span class="role-badge">ROLE_PO</span>
+  </div>
+  <div class="slide-badges">
+    <span class="method-label method-get">GET</span>
+    <span class="url-badge">/api/2/project/{id}/versions</span>
+    <span class="sep">|</span>
+    <span class="auth-badge">&#x1F510; ROLE_PO</span>
+  </div>
+  <div class="slide-main">
+    <div class="slide-mockup">
+      <div class="mock-browser">
+        <div class="mock-browser-bar">
+          <span class="mock-dot red"></span><span class="mock-dot yellow"></span><span class="mock-dot green"></span>
+          <div class="mock-url-bar">https://jira-pm.example.com/project/1/releases</div>
+        </div>
+        <div class="mock-browser-body">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+            <div style="font-size:10px;font-weight:600">릴리즈 허브</div>
+            <div class="mock-btn mock-btn-primary">+ 릴리즈 생성</div>
+          </div>
+          <div class="mock-annotation" data-label="VersionList">
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <div class="mock-card">
+                <div style="display:flex;justify-content:space-between;align-items:center">
+                  <div style="font-family:var(--mono);font-size:10px;color:var(--accent)">v3.0.0</div>
+                  <span class="mock-status mock-status-progress">진행중</span>
+                </div>
+                <div class="release-bar"><div class="release-fill" style="width:65%"></div></div>
+                <div style="font-size:8px;color:var(--text3);margin-top:2px">이슈 26/40개 완료 &nbsp;|&nbsp; 목표: 2026-04-15</div>
+                <div class="mock-btn-row" style="margin-top:4px">
+                  <div class="mock-btn mock-btn-secondary" style="font-size:8px">릴리즈 노트 생성</div>
+                </div>
+              </div>
+              <div class="mock-card" style="opacity:.8">
+                <div style="display:flex;justify-content:space-between;align-items:center">
+                  <div style="font-family:var(--mono);font-size:10px;color:var(--text2)">v2.1.0</div>
+                  <span class="mock-status mock-status-done">완료</span>
+                </div>
+                <div class="release-bar"><div class="release-fill" style="width:100%"></div></div>
+                <div style="font-size:8px;color:var(--text3);margin-top:2px">이슈 35/35개 완료 &nbsp;|&nbsp; 2026-02-28 릴리즈</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-panel" data-role="ROLE_PO">
+      <details class="panel-section" name="panel-s12" open>
+        <summary><span class="ps-icon">&#x26A1;</span>액션</summary>
+        <div class="panel-content">
+          <table class="action-table">
+            <thead><tr><th>액션</th><th>메서드</th><th>엔드포인트</th></tr></thead>
+            <tbody>
+              <tr><td>릴리즈 생성</td><td class="http-post">POST</td><td style="font-family:var(--mono);font-size:8px">/project/{id}/versions</td></tr>
+              <tr><td>릴리즈 노트 생성</td><td class="http-post">POST</td><td style="font-family:var(--mono);font-size:8px">/version/{id}/notes</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </details>
+      <details class="panel-section" name="panel-s12">
+        <summary><span class="ps-icon">&#x26A0;&#xFE0F;</span>오류</summary>
+        <div class="panel-content">
+          <table class="error-table">
+            <thead><tr><th>코드</th><th>설명</th></tr></thead>
+            <tbody>
+              <tr><td class="error-code">400</td><td>잘못된 버전 형식</td></tr>
+              <tr><td class="error-code">409</td><td>버전명 중복</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </details>
+      <details class="panel-section" name="panel-s12">
+        <summary><span class="ps-icon">&#x1F4E6;</span>ViewModel</summary>
+        <div class="panel-content">
+          <div class="vm-tree">
+            <div><span class="vm-key">versions</span>: <span class="vm-arr">Version[]</span></div>
+            <div><span class="vm-key">releaseNotes</span>: <span class="vm-type">String</span></div>
+          </div>
+        </div>
+      </details>
+      <details class="panel-section" name="panel-s12">
+        <summary><span class="ps-icon">&#x2705;</span>유효성</summary>
+        <div class="panel-content">
+          <div class="perm-row"><span class="perm-icon">&#x1F510;</span><span>ROLE_PO 권한 필수</span></div>
+        </div>
+      </details>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SLIDE 13: US-007 JQL SEARCH ===== -->
+<div class="slide sb-slide" data-role="ALL" data-id="13" data-set="us007-jql">
+  <div class="slide-header" data-role="ALL">
+    <span class="project-name">Jira PM |</span>
+    <span class="screen-id">JQL 검색</span>
+    <span class="role-badge">ALL</span>
+  </div>
+  <div class="slide-badges">
+    <span class="method-label method-post">POST</span>
+    <span class="url-badge">/api/2/search</span>
+    <span class="sep">|</span>
+    <span class="auth-badge">&#x1F510; ALL</span>
+  </div>
+  <div class="slide-main">
+    <div class="slide-mockup">
+      <div class="mock-browser">
+        <div class="mock-browser-bar">
+          <span class="mock-dot red"></span><span class="mock-dot yellow"></span><span class="mock-dot green"></span>
+          <div class="mock-url-bar">https://jira-pm.example.com/search</div>
+        </div>
+        <div class="mock-browser-body">
+          <div style="font-size:10px;font-weight:600;margin-bottom:4px">JQL 검색</div>
+          <div class="mock-annotation" data-label="JQLInput" style="margin-bottom:4px">
+            <div class="mock-search-bar" style="font-family:var(--mono);font-size:9px;color:var(--accent)">
+              project = PM AND assignee = currentUser() AND status != Done ORDER BY priority DESC
+            </div>
+            <div class="autocomplete-drop">
+              <div class="autocomplete-item" style="color:var(--green)">status</div>
+              <div class="autocomplete-item" style="color:var(--orange)">sprint</div>
+              <div class="autocomplete-item" style="color:var(--purple)">assignee</div>
+            </div>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px">
+            <div style="font-size:8px;color:var(--text2)">결과 7개</div>
+            <div class="mock-btn mock-btn-secondary" style="font-size:8px">필터 저장</div>
+          </div>
+          <table class="mock-table">
+            <thead><tr><th>키</th><th>타입</th><th>제목</th><th>상태</th><th>담당자</th></tr></thead>
+            <tbody>
+              <tr><td class="jql-result-key">PM-101</td><td style="font-size:7px">Story</td><td>로그인 API 구현</td><td><span class="mock-status mock-status-progress">In Progress</span></td><td style="font-size:8px">dev1</td></tr>
+              <tr><td class="jql-result-key">PM-102</td><td style="font-size:7px">Story</td><td>대시보드 UI</td><td><span class="mock-status mock-status-review">Review</span></td><td style="font-size:8px">dev1</td></tr>
+              <tr><td class="jql-result-key">PM-104</td><td style="font-size:7px">Task</td><td>DB 마이그레이션</td><td><span class="mock-status mock-status-progress">In Progress</span></td><td style="font-size:8px">dev1</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="slide-panel" data-role="ALL">
+      <details class="panel-section" name="panel-s13" open>
+        <summary><span class="ps-icon">&#x26A1;</span>액션</summary>
+        <div class="panel-content">
+          <table class="action-table">
+            <thead><tr><th>액션</th><th>메서드</th><th>엔드포인트</th></tr></thead>
+            <tbody>
+              <tr><td>검색 실행</td><td class="http-post">POST</td><td style="font-family:var(--mono);font-size:8px">/api/2/search</td></tr>
+              <tr><td>필터 저장</td><td class="http-post">POST</td><td style="font-family:var(--mono);font-size:8px">/api/2/filter</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </details>
+      <details class="panel-section" name="panel-s13">
+        <summary><span class="ps-icon">&#x26A0;&#xFE0F;</span>오류</summary>
+        <div class="panel-content">
+          <table class="error-table">
+            <thead><tr><th>코드</th><th>설명</th></tr></thead>
+            <tbody>
+              <tr><td class="error-code">400</td><td>JQL 구문 오류</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </details>
+      <details class="panel-section" name="panel-s13">
+        <summary><span class="ps-icon">&#x1F4E6;</span>ViewModel</summary>
+        <div class="panel-content">
+          <div class="vm-tree">
+            <div><span class="vm-key">jql</span>: <span class="vm-type">String</span></div>
+            <div><span class="vm-key">results</span>: <span class="vm-arr">Issue[]</span></div>
+            <div><span class="vm-key">savedFilters</span>: <span class="vm-arr">Filter[]</span></div>
+          </div>
+        </div>
+      </details>
+      <details class="panel-section" name="panel-s13">
+        <summary><span class="ps-icon">&#x2705;</span>유효성</summary>
+        <div class="panel-content">
+          <div class="perm-row"><span class="perm-icon">&#x1F510;</span><span>JQL 구문 유효성 검사</span></div>
+          <div class="perm-row"><span class="perm-icon">&#x1F510;</span><span>인증 사용자 전체</span></div>
+        </div>
+      </details>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SLIDE 14: US-008 PROJECT SETTINGS ===== -->
+<div class="slide sb-slide" data-role="ROLE_ADMIN" data-id="14" data-set="us008-settings">
+  <div class="slide-header" data-role="ROLE_ADMIN">
+    <span class="project-name">Jira PM |</span>
+    <span class="screen-id">ROLE_ADMIN 프로젝트 설정</span>
+    <span class="role-badge">ROLE_ADMIN</span>
+  </div>
+  <div class="slide-badges">
+    <span class="method-label method-put">PUT</span>
+    <span class="url-badge">/api/2/project/{id}</span>
+    <span class="sep">|</span>
+    <span class="auth-badge">&#x1F510; ROLE_ADMIN</span>
+  </div>
+  <div class="slide-main">
+    <div class="slide-mockup">
+      <div class="mock-browser">
+        <div class="mock-browser-bar">
+          <span class="mock-dot red"></span><span class="mock-dot yellow"></span><span class="mock-dot green"></span>
+          <div class="mock-url-bar">https://jira-pm.example.com/project/1/settings</div>
+        </div>
+        <div class="mock-browser-body">
+          <div style="font-size:10px;font-weight:600;margin-bottom:4px">프로젝트 설정</div>
+          <div class="settings-tab-row">
+            <div class="settings-tab active">일반</div>
+            <div class="settings-tab">워크플로우</div>
+            <div class="settings-tab">멤버</div>
+            <div class="settings-tab">보안</div>
+            <div class="settings-tab">알림</div>
+          </div>
+          <div class="mock-annotation" data-label="GeneralSettings">
+            <div class="mock-form">
+              <div class="mock-form-row">
+                <div class="mock-form-label">프로젝트 이름</div>
+                <div class="mock-form-input">Jira 프로젝트 관리 시스템</div>
+              </div>
+              <div class="mock-form-row">
+                <div class="mock-form-label">프로젝트 키</div>
+                <div class="mock-form-input" style="font-family:var(--mono)">PM</div>
+              </div>
+              <div class="mock-form-row">
+                <div class="mock-form-label">프로젝트 유형</div>
+                <div class="mock-form-select">Scrum &#x25BE;</div>
+              </div>
+              <div class="mock-form-row-2">
+                <div class="mock-form-row">
+                  <div class="mock-form-label">WIP 한도 (In Progress)</div>
+                  <div class="mock-form-input">3</div>
+                </div>
+                <div class="mock-form-row">
+                  <div class="mock-form-label">스프린트 기간 (일)</div>
+                  <div class="mock-form-input">14</div>
+                </div>
+              </div>
+              <div style="margin-top:4px;font-size:9px;font-weight:600;color:var(--text2)">멤버 관리</div>
+              <table class="mock-table" style="margin-top:3px">
+                <thead><tr><th>사용자</th><th>역할</th><th>액션</th></tr></thead>
+                <tbody>
+                  <tr><td>dev1@example.com</td><td><span style="color:#3FB950;font-size:8px">DEV</span></td><td><span class="mock-btn mock-btn-danger" style="padding:1px 5px;font-size:7px">제거</span></td></tr>
+                  <tr><td>po@example.com</td><td><span style="color:#F59E0B;font-size:8px">PO</span></td><td><span class="mock-btn mock-btn-danger" style="padding:1px 5px;font-size:7px">제거</span></td></tr>
+                </tbody>
+              </table>
+              <div class="mock-btn-row">
+                <div class="mock-btn mock-btn-primary">설정 저장</div>
+                <div class="mock-btn mock-btn-secondary">+ 멤버 추가</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-panel" data-role="ROLE_ADMIN">
+      <details class="panel-section" name="panel-s14" open>
+        <summary><span class="ps-icon">&#x26A1;</span>액션</summary>
+        <div class="panel-content">
+          <table class="action-table">
+            <thead><tr><th>액션</th><th>메서드</th><th>엔드포인트</th></tr></thead>
+            <tbody>
+              <tr><td>설정 저장</td><td class="http-put">PUT</td><td style="font-family:var(--mono);font-size:8px">/api/2/project/{id}</td></tr>
+              <tr><td>멤버 추가</td><td class="http-post">POST</td><td style="font-family:var(--mono);font-size:8px">/project/{id}/members</td></tr>
+              <tr><td>멤버 제거</td><td class="http-delete">DELETE</td><td style="font-family:var(--mono);font-size:8px">/project/{id}/members/{uid}</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </details>
+      <details class="panel-section" name="panel-s14">
+        <summary><span class="ps-icon">&#x26A0;&#xFE0F;</span>오류</summary>
+        <div class="panel-content">
+          <table class="error-table">
+            <thead><tr><th>코드</th><th>설명</th></tr></thead>
+            <tbody>
+              <tr><td class="error-code">403</td><td>관리자 권한 없음</td></tr>
+              <tr><td class="error-code">400</td><td>잘못된 설정값</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </details>
+      <details class="panel-section" name="panel-s14">
+        <summary><span class="ps-icon">&#x1F4E6;</span>ViewModel</summary>
+        <div class="panel-content">
+          <div class="vm-tree">
+            <div><span class="vm-key">projectConfig</span>: <span class="vm-type">ProjectConfig</span></div>
+            <div><span class="vm-key">members</span>: <span class="vm-arr">Member[]</span></div>
+            <div><span class="vm-key">workflows</span>: <span class="vm-arr">Workflow[]</span></div>
+          </div>
+        </div>
+      </details>
+      <details class="panel-section" name="panel-s14">
+        <summary><span class="ps-icon">&#x2705;</span>유효성</summary>
+        <div class="panel-content">
+          <div class="perm-row"><span class="perm-icon">&#x1F510;</span><span>ROLE_ADMIN 권한 필수</span></div>
+        </div>
+      </details>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SLIDE 15: US-009 AUDIT LOG ===== -->
+<div class="slide sb-slide" data-role="ROLE_ADMIN" data-id="15" data-set="us009-audit">
+  <div class="slide-header" data-role="ROLE_ADMIN">
+    <span class="project-name">Jira PM |</span>
+    <span class="screen-id">ROLE_ADMIN Audit Log</span>
+    <span class="role-badge">ROLE_ADMIN</span>
+  </div>
+  <div class="slide-badges">
+    <span class="method-label method-get">GET</span>
+    <span class="url-badge">/api/2/audit-log</span>
+    <span class="sep">|</span>
+    <span class="auth-badge">&#x1F510; ROLE_ADMIN</span>
+  </div>
+  <div class="slide-main">
+    <div class="slide-mockup">
+      <div class="mock-browser">
+        <div class="mock-browser-bar">
+          <span class="mock-dot red"></span><span class="mock-dot yellow"></span><span class="mock-dot green"></span>
+          <div class="mock-url-bar">https://jira-pm.example.com/admin/audit-log</div>
+        </div>
+        <div class="mock-browser-body">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px">
+            <div style="font-size:10px;font-weight:600">Audit Log</div>
+            <div style="display:flex;gap:5px">
+              <div class="mock-form-input" style="font-size:8px;padding:3px 7px">2026-03-01 ~ 2026-03-22</div>
+              <div class="mock-btn mock-btn-secondary" style="font-size:8px">CSV 내보내기</div>
+            </div>
+          </div>
+          <div class="mock-annotation" data-label="AuditLogTable">
+            <div style="border:1px solid var(--border);border-radius:3px;overflow:hidden">
+              <div style="display:grid;grid-template-columns:90px 80px 80px 100px 70px;background:var(--surface3);padding:4px 6px;font-size:8px;font-weight:600;color:var(--text2);gap:4px">
+                <span>시간</span><span>사용자</span><span>액션</span><span>대상</span><span>IP</span>
+              </div>
+              <div class="audit-row"><span style="font-family:var(--mono);font-size:7px;color:var(--text3)">03-22 14:32</span><span>admin</span><span style="color:var(--red);font-size:8px">DELETE</span><span style="font-family:var(--mono);font-size:8px">PM-099</span><span style="font-family:var(--mono);font-size:7px">10.0.0.1</span></div>
+              <div class="audit-row"><span style="font-family:var(--mono);font-size:7px;color:var(--text3)">03-22 13:15</span><span>po</span><span style="color:var(--blue);font-size:8px">CREATE</span><span style="font-family:var(--mono);font-size:8px">PM-106</span><span style="font-family:var(--mono);font-size:7px">10.0.0.2</span></div>
+              <div class="audit-row"><span style="font-family:var(--mono);font-size:7px;color:var(--text3)">03-22 11:05</span><span>dev1</span><span style="color:var(--orange);font-size:8px">UPDATE</span><span style="font-family:var(--mono);font-size:8px">PM-101</span><span style="font-family:var(--mono);font-size:7px">10.0.0.3</span></div>
+              <div class="audit-row"><span style="font-family:var(--mono);font-size:7px;color:var(--text3)">03-22 09:45</span><span>sm</span><span style="color:var(--green);font-size:8px">SPRINT</span><span style="font-family:var(--mono);font-size:8px">Sprint 13</span><span style="font-family:var(--mono);font-size:7px">10.0.0.4</span></div>
+              <div class="audit-row"><span style="font-family:var(--mono);font-size:7px;color:var(--text3)">03-21 18:20</span><span>admin</span><span style="color:var(--purple);font-size:8px">CONFIG</span><span style="font-family:var(--mono);font-size:8px">WIP=3</span><span style="font-family:var(--mono);font-size:7px">10.0.0.1</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-panel" data-role="ROLE_ADMIN">
+      <details class="panel-section" name="panel-s15" open>
+        <summary><span class="ps-icon">&#x26A1;</span>액션</summary>
+        <div class="panel-content">
+          <table class="action-table">
+            <thead><tr><th>액션</th><th>메서드</th><th>엔드포인트</th></tr></thead>
+            <tbody>
+              <tr><td>로그 검색</td><td class="http-get">GET</td><td style="font-family:var(--mono);font-size:8px">/api/2/audit-log</td></tr>
+              <tr><td>CSV 내보내기</td><td class="http-get">GET</td><td style="font-family:var(--mono);font-size:8px">/api/2/audit-log/export</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </details>
+      <details class="panel-section" name="panel-s15">
+        <summary><span class="ps-icon">&#x26A0;&#xFE0F;</span>오류</summary>
+        <div class="panel-content">
+          <table class="error-table">
+            <thead><tr><th>코드</th><th>설명</th></tr></thead>
+            <tbody>
+              <tr><td class="error-code">403</td><td>ADMIN 권한 없음</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </details>
+      <details class="panel-section" name="panel-s15">
+        <summary><span class="ps-icon">&#x1F4E6;</span>ViewModel</summary>
+        <div class="panel-content">
+          <div class="vm-tree">
+            <div><span class="vm-key">logs</span>: <span class="vm-arr">AuditLog[]</span></div>
+            <div><span class="vm-key">dateRange</span>: <span class="vm-type">DateRange</span></div>
+            <div><span class="vm-key">filters</span>: <span class="vm-type">Map</span></div>
+          </div>
+        </div>
+      </details>
+      <details class="panel-section" name="panel-s15">
+        <summary><span class="ps-icon">&#x2705;</span>유효성</summary>
+        <div class="panel-content">
+          <div class="perm-row"><span class="perm-icon">&#x1F510;</span><span>ROLE_ADMIN 권한 필수</span></div>
+        </div>
+      </details>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SLIDE 16: US-010 REPORT ===== -->
+<div class="slide sb-slide" data-role="ROLE_PO" data-id="16" data-set="us010-report">
+  <div class="slide-header" data-role="ROLE_PO">
+    <span class="project-name">Jira PM |</span>
+    <span class="screen-id">ROLE_PO 리포트</span>
+    <span class="role-badge">ROLE_PO</span>
+  </div>
+  <div class="slide-badges">
+    <span class="method-label method-get">GET</span>
+    <span class="url-badge">/api/2/report/{type}</span>
+    <span class="sep">|</span>
+    <span class="auth-badge">&#x1F510; ROLE_PO</span>
+  </div>
+  <div class="slide-main">
+    <div class="slide-mockup">
+      <div class="mock-browser">
+        <div class="mock-browser-bar">
+          <span class="mock-dot red"></span><span class="mock-dot yellow"></span><span class="mock-dot green"></span>
+          <div class="mock-url-bar">https://jira-pm.example.com/report/burndown?sprint=12</div>
+        </div>
+        <div class="mock-browser-body">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+            <div style="font-size:10px;font-weight:600">리포트 — Sprint 12</div>
+            <div style="display:flex;gap:4px">
+              <div class="mock-btn mock-btn-secondary" style="font-size:8px">PNG</div>
+              <div class="mock-btn mock-btn-secondary" style="font-size:8px">CSV</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:3px;margin-bottom:5px">
+            <div class="report-tab active">번다운</div>
+            <div class="report-tab">속도</div>
+            <div class="report-tab">CFD</div>
+            <div class="report-tab">사이클 타임</div>
+          </div>
+          <div class="mock-annotation" data-label="BurndownChart" style="flex:1">
+            <div style="flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:8px;display:flex;flex-direction:column;gap:4px">
+              <div style="font-size:9px;font-weight:600;color:var(--text2)">Sprint 12 번다운 차트</div>
+              <div style="flex:1;position:relative;min-height:120px;border-left:1px solid var(--border2);border-bottom:1px solid var(--border2)">
+                <svg width="100%" height="120" viewBox="0 0 300 120" preserveAspectRatio="none">
+                  <line x1="0" y1="10" x2="300" y2="110" stroke="#444" stroke-width="1" stroke-dasharray="4"/>
+                  <polyline points="0,10 40,22 80,45 120,58 160,70 200,78 240,95 300,110" fill="none" stroke="#3fb950" stroke-width="2"/>
+                  <polyline points="0,10 40,18 80,30 120,60 160,60 200,85 240,90 300,100" fill="none" stroke="#58a6ff" stroke-width="2"/>
+                </svg>
+                <div style="position:absolute;bottom:2px;left:4px;font-size:7px;color:var(--text3);display:flex;gap:8px">
+                  <span style="color:#444">— 이상</span>
+                  <span style="color:#3fb950">— 실제</span>
+                  <span style="color:#58a6ff">— 완료</span>
+                </div>
+              </div>
+              <div class="mock-grid-3" style="margin-top:4px">
+                <div class="mock-card" style="padding:5px">
+                  <div class="mock-card-title" style="font-size:8px">총 SP</div>
+                  <div style="font-size:14px;font-weight:700;color:var(--accent)">80</div>
+                </div>
+                <div class="mock-card" style="padding:5px">
+                  <div class="mock-card-title" style="font-size:8px">완료 SP</div>
+                  <div style="font-size:14px;font-weight:700;color:var(--green)">38</div>
+                </div>
+                <div class="mock-card" style="padding:5px">
+                  <div class="mock-card-title" style="font-size:8px">잔여 SP</div>
+                  <div style="font-size:14px;font-weight:700;color:var(--orange)">42</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-panel" data-role="ROLE_PO">
+      <details class="panel-section" name="panel-s16" open>
+        <summary><span class="ps-icon">&#x26A1;</span>액션</summary>
+        <div class="panel-content">
+          <table class="action-table">
+            <thead><tr><th>액션</th><th>메서드</th><th>엔드포인트</th></tr></thead>
+            <tbody>
+              <tr><td>리포트 조회</td><td class="http-get">GET</td><td style="font-family:var(--mono);font-size:8px">/api/2/report/{type}</td></tr>
+              <tr><td>PNG 내보내기</td><td class="http-get">GET</td><td style="font-family:var(--mono);font-size:8px">/report/export/png</td></tr>
+              <tr><td>CSV 내보내기</td><td class="http-get">GET</td><td style="font-family:var(--mono);font-size:8px">/report/export/csv</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </details>
+      <details class="panel-section" name="panel-s16">
+        <summary><span class="ps-icon">&#x26A0;&#xFE0F;</span>오류</summary>
+        <div class="panel-content">
+          <table class="error-table">
+            <thead><tr><th>코드</th><th>설명</th></tr></thead>
+            <tbody>
+              <tr><td class="error-code">404</td><td>스프린트 없음</td></tr>
+              <tr><td class="error-code">403</td><td>프로젝트 멤버 아님</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </details>
+      <details class="panel-section" name="panel-s16">
+        <summary><span class="ps-icon">&#x1F4E6;</span>ViewModel</summary>
+        <div class="panel-content">
+          <div class="vm-tree">
+            <div><span class="vm-key">reportType</span>: <span class="vm-type">Enum</span></div>
+            <div><span class="vm-key">chartData</span>: <span class="vm-type">ChartDTO</span></div>
+            <div><span class="vm-key">sprintId</span>: <span class="vm-type">Long</span></div>
+          </div>
+        </div>
+      </details>
+      <details class="panel-section" name="panel-s16">
+        <summary><span class="ps-icon">&#x2705;</span>유효성</summary>
+        <div class="panel-content">
+          <div class="perm-row"><span class="perm-icon">&#x1F510;</span><span>프로젝트 멤버 필수</span></div>
+        </div>
+      </details>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SLIDE 17: ERROR SCREENS ===== -->
+<div class="slide sb-slide" data-role="ALL" data-id="17" data-set="errors">
+  <div class="slide-header" data-role="ALL">
+    <span class="project-name">Jira PM |</span>
+    <span class="screen-id">공통 에러 화면</span>
+    <span class="role-badge">ALL</span>
+  </div>
+  <div class="slide-badges">
+    <span class="method-label method-error">ERROR</span>
+    <span class="url-badge">공통 오류 처리</span>
+    <span class="sep">|</span>
+    <span class="auth-badge">&#x1F510; ALL</span>
+  </div>
+  <div class="slide-main">
+    <div class="slide-mockup">
+      <div class="mock-browser">
+        <div class="mock-browser-bar">
+          <span class="mock-dot red"></span><span class="mock-dot yellow"></span><span class="mock-dot green"></span>
+          <div class="mock-url-bar">https://jira-pm.example.com/error</div>
+        </div>
+        <div class="mock-browser-body">
+          <div style="font-size:10px;font-weight:600;margin-bottom:6px">공통 에러 화면 모음</div>
+          <div class="error-card-grid">
+            <div class="error-card">
+              <div style="font-size:9px;font-weight:600;color:var(--text3);margin-bottom:2px">E-001</div>
+              <div class="error-card-code">&#x1F4E1;</div>
+              <div class="error-card-title">네트워크 오류</div>
+              <div class="error-card-desc">서버에 연결할 수 없습니다. 인터넷 연결을 확인하세요.</div>
+              <div class="error-card-actions">
+                <div class="mock-btn mock-btn-primary" style="font-size:8px">재시도</div>
+              </div>
+            </div>
+            <div class="error-card">
+              <div style="font-size:9px;font-weight:600;color:var(--text3);margin-bottom:2px">E-002</div>
+              <div class="error-card-code">403</div>
+              <div class="error-card-title">권한 없음</div>
+              <div class="error-card-desc">이 페이지에 접근할 권한이 없습니다.</div>
+              <div class="error-card-actions">
+                <div class="mock-btn mock-btn-secondary" style="font-size:8px">이전 페이지</div>
+              </div>
+            </div>
+            <div class="error-card">
+              <div style="font-size:9px;font-weight:600;color:var(--text3);margin-bottom:2px">E-003</div>
+              <div class="error-card-code">404</div>
+              <div class="error-card-title">페이지 없음</div>
+              <div class="error-card-desc">요청하신 페이지를 찾을 수 없습니다.</div>
+              <div class="error-card-actions">
+                <div class="mock-btn mock-btn-primary" style="font-size:8px">홈으로</div>
+              </div>
+            </div>
+            <div class="error-card">
+              <div style="font-size:9px;font-weight:600;color:var(--text3);margin-bottom:2px">E-004</div>
+              <div class="error-card-code">401</div>
+              <div class="error-card-title">세션 만료</div>
+              <div class="error-card-desc">로그인 세션이 만료되었습니다. 다시 로그인해 주세요.</div>
+              <div class="error-card-actions">
+                <div class="mock-btn mock-btn-primary" style="font-size:8px">로그인</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-panel" data-role="ALL">
+      <details class="panel-section" name="panel-s17" open>
+        <summary><span class="ps-icon">&#x26A1;</span>액션</summary>
+        <div class="panel-content">
+          <table class="action-table">
+            <thead><tr><th>에러</th><th>액션</th></tr></thead>
+            <tbody>
+              <tr><td>E-001 네트워크</td><td>재시도 버튼</td></tr>
+              <tr><td>E-002 403</td><td>이전 페이지 이동</td></tr>
+              <tr><td>E-003 404</td><td>홈으로 이동</td></tr>
+              <tr><td>E-004 세션만료</td><td>로그인 페이지 이동</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </details>
+      <details class="panel-section" name="panel-s17">
+        <summary><span class="ps-icon">&#x26A0;&#xFE0F;</span>HTTP 상태</summary>
+        <div class="panel-content">
+          <table class="error-table">
+            <thead><tr><th>코드</th><th>설명</th></tr></thead>
+            <tbody>
+              <tr><td class="error-code">0</td><td>네트워크 연결 실패</td></tr>
+              <tr><td class="error-code">401</td><td>미인증 / 세션 만료</td></tr>
+              <tr><td class="error-code">403</td><td>권한 없음</td></tr>
+              <tr><td class="error-code">404</td><td>리소스 없음</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </details>
+      <details class="panel-section" name="panel-s17">
+        <summary><span class="ps-icon">&#x1F4E6;</span>ViewModel</summary>
+        <div class="panel-content">
+          <div class="vm-tree">
+            <div><span class="vm-key">errorCode</span>: <span class="vm-type">Int</span></div>
+            <div><span class="vm-key">errorMessage</span>: <span class="vm-type">String</span></div>
+          </div>
+        </div>
+      </details>
+      <details class="panel-section" name="panel-s17">
+        <summary><span class="ps-icon">&#x2705;</span>유효성</summary>
+        <div class="panel-content">
+          <div class="perm-row"><span class="perm-icon">&#x2139;&#xFE0F;</span><span>N/A — 공통 에러 처리</span></div>
+        </div>
+      </details>
+    </div>
+  </div>
+</div>
+
+</div><!-- /slides -->
+</div><!-- /presentation -->
+
+<!-- ROLE FILTER BAR -->
+<div class="role-filter" id="roleFilter">
+  <button class="role-filter-btn active" data-filter="ALL">전체</button>
+  <button class="role-filter-btn" data-filter="ROLE_DEV" style="border-color:#3FB950;color:#3FB950">DEV</button>
+  <button class="role-filter-btn" data-filter="ROLE_PO" style="border-color:#F59E0B;color:#F59E0B">PO</button>
+  <button class="role-filter-btn" data-filter="ROLE_SM" style="border-color:#8B5CF6;color:#8B5CF6">SM</button>
+  <button class="role-filter-btn" data-filter="ROLE_QA" style="border-color:#EC4899;color:#EC4899">QA</button>
+  <button class="role-filter-btn" data-filter="ROLE_ADMIN" style="border-color:#58a6ff;color:#58a6ff">ADMIN</button>
+</div>
+
+<!-- NAV ARROWS -->
+<button class="nav-arrow nav-prev" id="navPrev">&#x2039;</button>
+<button class="nav-arrow nav-next" id="navNext">&#x203A;</button>
+
+<!-- PROGRESS BAR -->
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+<div class="slide-counter" id="slideCounter">1 / 18</div>
+
+<!-- TOC BUTTON -->
+<button class="toc-btn" id="tocBtn">&#x2630; 목차</button>
+<button class="help-btn" id="helpBtn">? 도움말</button>
+
+<!-- TOC OVERLAY -->
+<div class="toc-overlay" id="tocOverlay">
+  <div class="toc-sidebar">
+    <h3>목차 (Table of Contents)</h3>
+    <div id="tocList"></div>
+  </div>
+</div>
+
+<!-- HELP OVERLAY -->
+<div class="help-overlay" id="helpOverlay">
+  <div class="help-box">
+    <h3>키보드 단축키</h3>
+    <div class="help-row"><span>다음 슬라이드</span><span class="help-key">&#x2192; / Space</span></div>
+    <div class="help-row"><span>이전 슬라이드</span><span class="help-key">&#x2190;</span></div>
+    <div class="help-row"><span>다음 세트</span><span class="help-key">&#x2193;</span></div>
+    <div class="help-row"><span>이전 세트</span><span class="help-key">&#x2191;</span></div>
+    <div class="help-row"><span>처음으로</span><span class="help-key">Home</span></div>
+    <div class="help-row"><span>마지막으로</span><span class="help-key">End</span></div>
+    <div class="help-row"><span>목차</span><span class="help-key">T</span></div>
+    <div class="help-row"><span>도움말 닫기</span><span class="help-key">Esc / H</span></div>
+    <br>
+    <button class="mock-btn mock-btn-secondary" onclick="document.getElementById('helpOverlay').classList.remove('open')">닫기</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  // ── DATA ──────────────────────────────────────────────────────────────────
+  const TOC_DATA = [
+    {id:"00",label:"타이틀",set:"intro"},
+    {id:"01",label:"역할 정의",set:"intro"},
+    {id:"02",label:"시나리오 개요",set:"intro"},
+    {id:"03",label:"US-001 로그인",set:"us001-login"},
+    {id:"04",label:"US-001 대시보드 (DEV)",set:"us001-login"},
+    {id:"05",label:"US-002 백로그 (PO)",set:"us002-backlog"},
+    {id:"06",label:"US-002 이슈 생성 (PO)",set:"us002-backlog"},
+    {id:"07",label:"US-003 스프린트 생성 (SM)",set:"us003-sprint"},
+    {id:"08",label:"US-003 Planning Poker (SM)",set:"us003-sprint"},
+    {id:"09",label:"US-004 스크럼 보드 (DEV)",set:"us004-board"},
+    {id:"10",label:"US-004 이슈 상세 (DEV)",set:"us004-board"},
+    {id:"11",label:"US-005 코드 리뷰 (QA)",set:"us005-review"},
+    {id:"12",label:"US-006 릴리즈 관리 (PO)",set:"us006-release"},
+    {id:"13",label:"US-007 JQL 검색",set:"us007-jql"},
+    {id:"14",label:"US-008 프로젝트 설정 (ADMIN)",set:"us008-settings"},
+    {id:"15",label:"US-009 Audit Log (ADMIN)",set:"us009-audit"},
+    {id:"16",label:"US-010 리포트 (PO)",set:"us010-report"},
+    {id:"17",label:"공통 에러 화면",set:"errors"},
+  ];
+
+  // ── STATE ─────────────────────────────────────────────────────────────────
+  let currentIndex = 0;
+  let currentFilter = "ALL";
+  let isAnimating = false;
+  let visibleSlides = [];
+  const allSlides = Array.from(document.querySelectorAll(".slide"));
+
+  // ── 1. VIEWPORT SCALING ───────────────────────────────────────────────────
+  function fitSlides(){
+    const container = document.querySelector(".slides");
+    const W = 960, H = 540;
+    const scaleX = window.innerWidth / W;
+    const scaleY = window.innerHeight / H;
+    const scale = Math.min(scaleX, scaleY) * 0.98;
+    container.style.transform = "scale(" + scale + ")";
+  }
+  window.addEventListener("resize", fitSlides);
+  fitSlides();
+
+  // ── 2. ROLE FILTERING ─────────────────────────────────────────────────────
+  function applyRoleFilter(filter){
+    currentFilter = filter;
+    visibleSlides = allSlides.filter(s => {
+      const role = s.getAttribute("data-role");
+      if(filter === "ALL") return true;
+      return role === "ALL" || role === filter;
+    });
+    allSlides.forEach(s => s.classList.add("hidden"));
+    visibleSlides.forEach(s => s.classList.remove("hidden"));
+    // clamp index
+    if(currentIndex >= visibleSlides.length) currentIndex = 0;
+    showSlide(currentIndex);
+    buildTOC();
+  }
+
+  // ── 3. SHOW SLIDE ─────────────────────────────────────────────────────────
+  function showSlide(idx){
+    if(isAnimating) return;
+    if(visibleSlides.length === 0) return;
+    idx = Math.max(0, Math.min(idx, visibleSlides.length - 1));
+    isAnimating = true;
+
+    visibleSlides.forEach(s => s.classList.remove("active"));
+    visibleSlides[idx].classList.add("active");
+    currentIndex = idx;
+
+    updateProgress();
+    updateCounter();
+    updateTOCActive();
+    syncHash();
+
+    setTimeout(() => { isAnimating = false; }, 350);
+  }
+
+  // ── 4. KEYBOARD NAVIGATION ────────────────────────────────────────────────
+  document.addEventListener("keydown", function(e){
+    if(e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") return;
+    switch(e.key){
+      case "ArrowRight": case " ": e.preventDefault(); showSlide(currentIndex + 1); break;
+      case "ArrowLeft":  e.preventDefault(); showSlide(currentIndex - 1); break;
+      case "ArrowDown":  e.preventDefault(); nextSet(); break;
+      case "ArrowUp":    e.preventDefault(); prevSet(); break;
+      case "Home":       e.preventDefault(); showSlide(0); break;
+      case "End":        e.preventDefault(); showSlide(visibleSlides.length - 1); break;
+      case "t": case "T": toggleTOC(); break;
+      case "h": case "H": case "Escape": closePanels(); break;
+    }
+  });
+
+  // ── 5. SET NAVIGATION ─────────────────────────────────────────────────────
+  function nextSet(){
+    const curSet = visibleSlides[currentIndex].getAttribute("data-set");
+    for(let i = currentIndex + 1; i < visibleSlides.length; i++){
+      if(visibleSlides[i].getAttribute("data-set") !== curSet){
+        showSlide(i); return;
+      }
+    }
+  }
+  function prevSet(){
+    const curSet = visibleSlides[currentIndex].getAttribute("data-set");
+    let targetSet = null;
+    for(let i = currentIndex - 1; i >= 0; i--){
+      const s = visibleSlides[i].getAttribute("data-set");
+      if(s !== curSet){ targetSet = s; break; }
+    }
+    if(!targetSet) return;
+    for(let i = 0; i < currentIndex; i++){
+      if(visibleSlides[i].getAttribute("data-set") === targetSet){
+        showSlide(i); return;
+      }
+    }
+  }
+
+  // ── 6. TOC ────────────────────────────────────────────────────────────────
+  function buildTOC(){
+    const list = document.getElementById("tocList");
+    list.innerHTML = "";
+    visibleSlides.forEach((s, i) => {
+      const dataId = s.getAttribute("data-id");
+      const entry = TOC_DATA.find(t => t.id === dataId);
+      const item = document.createElement("div");
+      item.className = "toc-item" + (i === currentIndex ? " active" : "");
+      item.innerHTML = "<span class='toc-id'>" + dataId + "</span>" + (entry ? entry.label : dataId);
+      item.addEventListener("click", function(){
+        showSlide(i);
+        document.getElementById("tocOverlay").classList.remove("open");
+      });
+      list.appendChild(item);
+    });
+  }
+  function toggleTOC(){
+    buildTOC();
+    document.getElementById("tocOverlay").classList.toggle("open");
+  }
+  function updateTOCActive(){
+    document.querySelectorAll(".toc-item").forEach((el, i) => {
+      el.classList.toggle("active", i === currentIndex);
+    });
+  }
+
+  // ── 7. URL HASH ───────────────────────────────────────────────────────────
+  function syncHash(){
+    const slide = visibleSlides[currentIndex];
+    if(slide) history.replaceState(null,"","#slide-" + slide.getAttribute("data-id"));
+  }
+  function loadFromHash(){
+    const hash = location.hash.replace("#slide-","");
+    if(!hash) return;
+    const idx = visibleSlides.findIndex(s => s.getAttribute("data-id") === hash);
+    if(idx >= 0) currentIndex = idx;
+  }
+
+  // ── 8. PROGRESS BAR ───────────────────────────────────────────────────────
+  function updateProgress(){
+    const pct = visibleSlides.length <= 1 ? 100 : (currentIndex / (visibleSlides.length - 1)) * 100;
+    document.getElementById("progressFill").style.width = pct + "%";
+  }
+  function updateCounter(){
+    document.getElementById("slideCounter").textContent =
+      (currentIndex + 1) + " / " + visibleSlides.length;
+  }
+
+  // ── 9. TOUCH / SWIPE ──────────────────────────────────────────────────────
+  let touchStartX = 0, touchStartY = 0;
+  document.addEventListener("touchstart", e => {
+    touchStartX = e.touches[0].clientX;
+    touchStartY = e.touches[0].clientY;
+  }, {passive:true});
+  document.addEventListener("touchend", e => {
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    const dy = e.changedTouches[0].clientY - touchStartY;
+    if(Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40){
+      if(dx < 0) showSlide(currentIndex + 1);
+      else        showSlide(currentIndex - 1);
+    }
+  }, {passive:true});
+
+  // ── 10. ROLE FILTER BUTTONS ───────────────────────────────────────────────
+  document.querySelectorAll(".role-filter-btn").forEach(btn => {
+    btn.addEventListener("click", function(){
+      document.querySelectorAll(".role-filter-btn").forEach(b => b.classList.remove("active"));
+      this.classList.add("active");
+      applyRoleFilter(this.getAttribute("data-filter"));
+    });
+  });
+
+  // ── NAV ARROWS ───────────────────────────────────────────────────────────
+  document.getElementById("navPrev").addEventListener("click", () => showSlide(currentIndex - 1));
+  document.getElementById("navNext").addEventListener("click", () => showSlide(currentIndex + 1));
+
+  // ── TOC / HELP BUTTONS ───────────────────────────────────────────────────
+  document.getElementById("tocBtn").addEventListener("click", toggleTOC);
+  document.getElementById("helpBtn").addEventListener("click", () => {
+    document.getElementById("helpOverlay").classList.add("open");
+  });
+  document.getElementById("tocOverlay").addEventListener("click", function(e){
+    if(e.target === this) this.classList.remove("open");
+  });
+
+  function closePanels(){
+    document.getElementById("helpOverlay").classList.remove("open");
+    document.getElementById("tocOverlay").classList.remove("open");
+  }
+
+  // ── INIT ─────────────────────────────────────────────────────────────────
+  applyRoleFilter("ALL");
+  loadFromHash();
+  showSlide(currentIndex);
+
+})();
+</script>
+</body>
+</html>
